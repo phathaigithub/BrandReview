@@ -1,4 +1,6 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import Layout from "../../components/Layouts/Layout";
 import "../../styles/HomeStyle.css";
 import Section1 from "./Section1";

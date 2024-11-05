@@ -1,24 +1,12 @@
 import React, { useEffect } from 'react';
 import * as Components from './Components';
 
-// import "./styles.css"
+import "./UserRegister.css"
 function UserRegister() {
     
     const [signIn, toggle] = React.useState(true);
 
-    useEffect(() => {
-        // Create a link element for the CSS file
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "./styles.cssstyles.css";
-        link.id = "user-register-css";
-
-        document.head.appendChild(link);
-
-        return () => {
-            document.head.removeChild(link);
-        };
-    }, []);
+    
     
     const [username, setUsername] = React.useState("");
     const [email, setEmail] = React.useState("");
@@ -41,7 +29,7 @@ function UserRegister() {
         setPassword("");
     }
      return(
-         <Components.Container>
+         <Components.Container >
              <Components.SignUpContainer isSignIn={signIn}>
                  <Components.Form>
                      <Components.Title>Create Account</Components.Title>

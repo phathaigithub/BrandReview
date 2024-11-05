@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 function Footer() {
   // Scroll State
   const [isVisible, setIsVisible] = useState(false);
