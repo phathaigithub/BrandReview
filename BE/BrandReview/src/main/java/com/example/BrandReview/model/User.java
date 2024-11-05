@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
+@Table(name = "User")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -24,11 +25,14 @@ public class User {
     private String password;
     private String phone;
     private String email;
-    private Boolean isEnable = true;
+
+    @Column(name = "IsEnable")
+    private Boolean isEnable;
     private String name;
     private LocalDate birth;
     private String gender;
-    private LocalDateTime initDate = LocalDateTime.now();
+    @Column(name = "InitDate")
+    private LocalDateTime InitDate = LocalDateTime.now();
 
     public User(String username, String password){
         this.username = username;
