@@ -16,13 +16,14 @@ const Home = () => {
     <>
       <Layout>
         {/* Home Section Hero Banner */}
+        <Section3 />
+        
         <Section1 />
 
         {/* Home Section About */}
         <Section2 />
 
         {/* Home Section Menu */}
-        <Section3 />
 
         {/* Home Section Promotion */}
         <Section4 />

@@ -244,7 +244,11 @@ a {
   color: var(--light-red);
 }
 .menu_section .card-title {
-  font-family: var(--oswald-font);
+white-space: nowrap;       /* Prevent text from wrapping to the next line */
+overflow: hidden;          /* Hide any text that overflows */
+text-overflow: ellipsis;   /* Show "..." for overflowing text */
+width: 100%;               /* Set a width to control when the ellipsis appears */
+font-family: var(--oswald-font);
   font-weight: 600;
   margin-top: 5px;
   margin-bottom: 10px;
