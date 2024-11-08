@@ -12,7 +12,7 @@ function App() {
     const body = document.body;
 
     // Toggle class based on path
-    if (location.pathname === "/register") {
+    if (location.pathname === "/register" || location.pathname === "/admin") {
       body.classList.add("center-body");
     } else {
       body.classList.remove("center-body");
