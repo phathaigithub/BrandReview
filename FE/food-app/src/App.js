@@ -17,7 +17,7 @@ function App() {
     } else {
       body.classList.remove("center-body");
     }
-  }, [location]);
+  });
 
   return <Routes />;
 
