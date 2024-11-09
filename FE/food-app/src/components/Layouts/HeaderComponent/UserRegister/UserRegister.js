@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as Components from './Components';
 import "./UserRegister.css";
+import { CContainer} from '@coreui/react'
 
 function UserRegister() {
     const [signIn, setSignIn] = useState(true);
@@ -46,12 +47,19 @@ function UserRegister() {
             setErrorMessage("Vui lòng điền đầy đủ thông tin để đăng nhập.");
             return;
         }
-        
+
         console.log("Đăng nhập thành công");
         // Perform your sign-in logic here
     };
 
     return (
+    <CContainer className="d-flex justify-content-center align-items-center" 
+    style={{ 
+        height: '100vh', 
+        backgroundImage: 'url("http://localhost:3000/static/media/hero-1.c176491a87d1cc685bd3.jpg")',
+        backgroundSize: '100% 100%',  // Stretches image to fit both width and height
+        backgroundPosition: 'center', 
+        }}>
         <Components.Container>
             <Components.SignUpContainer isSignIn={signIn}>
                 <Components.Form>
@@ -74,7 +82,7 @@ function UserRegister() {
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)} 
                     />
-                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                    {errorMessage && <p style={{ color: 'red', fontSize: '12px' }}>{errorMessage}</p>}
                     <Components.Button onClick={handleSignUpClick}>Đăng ký</Components.Button>
                 </Components.Form>
             </Components.SignUpContainer>
@@ -94,7 +102,7 @@ function UserRegister() {
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                    {errorMessage && <p style={{ color: 'red', fontSize: '15px' }}>{errorMessage}</p>}
                     <Components.Button onClick={handleSignInClick}>Đăng nhập</Components.Button>
                 </Components.Form>
             </Components.SignInContainer>
@@ -114,6 +122,8 @@ function UserRegister() {
                 </Components.Overlay>
             </Components.OverlayContainer>
         </Components.Container>
+    </CContainer>
+
     );
 }
 

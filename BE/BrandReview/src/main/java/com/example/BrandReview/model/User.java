@@ -24,15 +24,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min = 4, message = "Username must be at least 4 characters")
+    @Size(min = 4, message = "USER_INVALID")
     private String username;
 
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @Size(min = 6, message = "PASSWORD_INVALID")
     private String password;
 
     private String phone;
 
-    @Email(message = "Email should be valid and contain an @ symbol")
+    @Email(message = "EMAIL_INVALID")
     private String email;
 
     private Boolean isEnable;

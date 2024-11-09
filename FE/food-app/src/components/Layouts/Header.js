@@ -51,8 +51,8 @@ const Header = () => {
                 Register
               </Nav.Link>
               <Nav.Link as={Link} to="/">
-                <div className="cart">
-                  <i className="bi bi-bag fs-5"></i>
+                <div className="user">
+                  <i className="bi bi-bag fs-5"></i> 
                   <em className="roundpoint">2</em>
                 </div>
               </Nav.Link>
