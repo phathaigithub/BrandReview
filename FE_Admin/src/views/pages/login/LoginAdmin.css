@@ -2,9 +2,6 @@
 html, body{
 	height: 100%;
 }
-body{
-	background-image: linear-gradient( to right, #8b1a4d, #c6411f);
-}
 a{
 	color: #842029;
 	text-decoration: none;

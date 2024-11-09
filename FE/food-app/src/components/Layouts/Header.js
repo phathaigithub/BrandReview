@@ -5,6 +5,9 @@ import Logo from "../../assets/logo/logo.png";
 import "../../styles/HeaderStyle.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import UserHeaderDropdown from "./UserHeaderDropdown";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 const Header = () => {
   const [nav, setNav] = useState(false);
 
@@ -51,10 +54,11 @@ const Header = () => {
                 Register
               </Nav.Link>
               <Nav.Link as={Link} to="/">
-                <div className="user">
-                  <i className="bi bi-bag fs-5"></i> 
+                {/* <div className="user">
+                <FontAwesomeIcon icon={faUser} />
                   <em className="roundpoint">2</em>
-                </div>
+                </div> */}
+                <UserHeaderDropdown />
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>

@@ -1,3 +1,4 @@
+import { exact } from 'prop-types'
 import React from 'react'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -51,9 +52,21 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+// List PHAT HAI TAO
+const UsersersList = React.lazy(() => import("./views/list/UsersList/UsersList"))
+const EmployeesList = React.lazy(() => import("./views/list/EmployeesList/EmployeesList"))
+const BrandsList = React.lazy(() => import("./views/list/BrandsList/BrandsList"))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+
+
+  { path: '/list', name: 'Danh sách', element: Dashboard, exact: true },
+  { path: '/list/userslist', name: 'Người dùng', element: UsersersList },
+  { path: '/list/employeeslist', name: 'Nhân viên', element: EmployeesList },
+  { path: '/list/brandslist', name: 'Cửa hàng', element: BrandsList },
+
+
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
