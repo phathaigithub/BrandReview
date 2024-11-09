@@ -1,6 +1,7 @@
 import React from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
+import { Button, Box } from '@mui/material';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -20,6 +21,40 @@ const columns = [
     width: 160,
     valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
   },
+  {
+    field: 'actions',
+    headerName: '',
+    width: 120,
+    sortable: false,
+    renderCell: (params) => (
+        <button 
+        type="button" 
+        class="btn btn-info text-white"
+        onClick={(event) => {
+            event.stopPropagation(); 
+          }}
+        >
+            Update
+        </button>
+    )
+    },
+    {
+    field: 'actions2',
+    headerName: '',
+    width: 110,
+    sortable: false,
+    renderCell: (params) => (
+        <button 
+        type="button" 
+        class="btn btn-danger text-white"
+        onClick={(event) => {
+            event.stopPropagation(); 
+          }}
+        >
+            Delete
+            </button> 
+    )
+    },
 ];
 
 const rows = [
@@ -34,20 +69,35 @@ const rows = [
   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
 
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize: 7 };
 
-const EmployeesList = (props) => {
+const EmployeesList = () => {
   return (
-    <Paper sx={{ height: 400, width: '100%' }}>
+    <>
+    <Box display="flex" justifyContent="space-between" marginBottom={2}>
+        <Button variant="contained" color="primary">Add Employee</Button>
+        <Button variant="outlined" color="success">Export</Button>
+    </Box>
+    <Paper sx={{ height: 500, width: '100%' }}>
+        
       <DataGrid
         rows={rows}
         columns={columns}
-        initialState={{ pagination: { paginationModel } }}
+        initialState={{ pagination: { paginationModel } }} // I want to set pagination margin-top: 12px
         pageSizeOptions={[5, 10]}
         checkboxSelection
-        sx={{ border: 0 }}
+        sx={{
+          border: 0,
+          '.css-11cfq65-MuiTablePagination-displayedRows': {
+            marginTop: '15px',
+          },
+        }}
       />
     </Paper>
+    </>
   );
 }
+
+
+
 export default EmployeesList;
