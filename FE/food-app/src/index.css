@@ -1,7 +1,0 @@
-.center-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Optional, to center vertically as well */
-  margin: 0;
-}
