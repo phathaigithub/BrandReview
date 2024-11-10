@@ -49,4 +49,6 @@ public class UserServiceImp implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+
 }
