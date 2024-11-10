@@ -32,7 +32,7 @@ public class Brand {
     private String location;
     private String facebook;
     private String image;
-    private String url_slug;
+    private String slug;
 
     @Column(name = "InitDate")
     private LocalDateTime InitDate = LocalDateTime.now();

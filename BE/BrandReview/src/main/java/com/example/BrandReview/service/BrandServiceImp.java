@@ -21,4 +21,7 @@ public class BrandServiceImp implements BrandService {
                 .sorted(Comparator.comparing(Brand::getPriority).reversed())
                 .toList();
     }
+    public Brand getBrandBySlug(String slug){
+       return (Brand) brandRepository.findBrandBySlugIgnoreCase(slug);
+    }
 }
