@@ -1,8 +1,7 @@
-package com.example.BrandReview.dto.request;
+package com.example.BrandReview.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @AllArgsConstructor
 @NoArgsConstructor

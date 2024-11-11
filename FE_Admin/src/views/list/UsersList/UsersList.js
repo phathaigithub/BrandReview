@@ -29,12 +29,12 @@ const columns = [
     renderCell: (params) => (
         <button 
         type="button" 
-        class="btn btn-info text-white"
+        class="btn btn-warning text-white"
         onClick={(event) => {
             event.stopPropagation(); 
           }}
         >
-            Update
+            Chỉnh sửa
         </button>
     )
     },
@@ -51,7 +51,7 @@ const columns = [
             event.stopPropagation(); 
           }}
         >
-            Delete
+            Xoá
             </button> 
     )
     },
@@ -75,15 +75,15 @@ const UsersList = () => {
   return (
     <>
     <Box display="flex" justifyContent="space-between" marginBottom={2}>
-        <Button variant="contained" color="primary">Add Employee</Button>
-        <Button variant="outlined" color="success">Export</Button>
+        <Button variant="contained" color="primary">Thêm người dùng</Button>
+        <Button variant="outlined" color="success">Xuất danh sách</Button>
     </Box>
     <Paper sx={{ height: 500, width: '100%' }}>
         
       <DataGrid
         rows={rows}
         columns={columns}
-        initialState={{ pagination: { paginationModel } }} // I want to set pagination margin-top: 12px
+        initialState={{ pagination: { paginationModel } }} 
         pageSizeOptions={[5, 10]}
         checkboxSelection
         sx={{

@@ -13,7 +13,8 @@ public enum ErrorCode {
     USER_INVALID(1004, "Tên đăng nhập phải gồm tối thiểu 4 ký tự"),
     PASSWORD_INVALID(1005, "Mật khẩu phải gồm tối thiểu 6 ký tự"),
     USER_NOT_EXISTED(1006, "Tên đăng nhập không tồn tại"),
-    AUTHENTICATED(1006, "Tên đăng nhập hoặc mật khẩu không đúng")
+    AUTHENTICATED(1006, "Tên đăng nhập hoặc mật khẩu không đúng"),
+    POSITION_NOT_FOUND(1007, "Role khong ton tai")
     ;
     private int code;
     private String message;

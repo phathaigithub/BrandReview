@@ -1,4 +1,4 @@
-package com.example.BrandReview.response;
+package com.example.BrandReview.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

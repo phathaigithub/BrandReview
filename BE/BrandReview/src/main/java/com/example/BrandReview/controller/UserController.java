@@ -1,12 +1,10 @@
 package com.example.BrandReview.controller;
 
-import com.example.BrandReview.dto.request.ApiResponse;
+import com.example.BrandReview.dto.response.ApiResponse;
 import com.example.BrandReview.model.User;
 import com.example.BrandReview.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
