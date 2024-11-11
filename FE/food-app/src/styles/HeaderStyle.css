@@ -2,7 +2,7 @@
 header .navbar {
   position: absolute;
   width: 100%;
-  background-color: transparent;
+  background-color: white;
   z-index: 1000;
 }
 

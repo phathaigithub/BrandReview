@@ -216,7 +216,7 @@ a {
 
 /* Home Menu 3.0 */
 .menu_section {
-  padding-top: 100px;
+  padding-top: 150px;
   padding-bottom: 100px;
 }
 .menu_section .card-img-top {
@@ -239,6 +239,7 @@ a {
   color: var(--grey);
   font-size: 20px;
   cursor: pointer;
+  padding: 1px;
 }
 .menu_section .wishlist i:hover {
   color: var(--light-red);
@@ -258,10 +259,10 @@ font-family: var(--oswald-font);
   font-size: 15px;
 }
 .menu_section .menu_price {
-  background-color: var(--bg-coffee);
-  display: inline-block;
-  padding: 7px 12px;
-  border-radius: 4px;
+    background-color: #979797;
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
 }
 .menu_section .menu_price h5 {
   color: var(--yellow);

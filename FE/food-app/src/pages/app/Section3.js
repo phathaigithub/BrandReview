@@ -3,75 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import Cards from "../../components/Layouts/Cards";
 import { Link } from "react-router-dom";
 
-// Mock Data Cards
-
-// const mockData = [
-//     {
-//         id: "0001",
-//         image: Image1,
-//         title: "Crispy Chicken",
-//         paragraph: "Chicken breast, chilli sauce, tomatoes, pickles, coleslaw",
-//         rating: 7.25,
-//         price: 99.15,
-//     },
-//     {
-//         id: "0002",
-//         image: Image2,
-//         title: "Ultimate Bacon",
-//         paragraph: "House patty, cheddar cheese, bacon, onion, mustard",
-//         rating: 4.5,
-//         price: 99.32,
-//     },
-//     {
-//         id: "0003",
-//         image: Image3,
-//         title: "Black Sheep",
-//         paragraph: "American cheese, tomato relish, avocado, lettuce, red onion",
-//         rating: 4,
-//         price: 69.15,
-//     },
-//     {
-//         id: "0004",
-//         image: Image4,
-//         title: "Vegan Burger",
-//         paragraph: "House patty, cheddar cheese, bacon, onion, mustard",
-//         rating: 3.5,
-//         price: 99.25,
-//     },
-//     {
-//         id: "0005",
-//         image: Image5,
-//         title: "Double Burger",
-//         paragraph: "2 patties, cheddar cheese, mustard, pickles, tomatoes",
-//         rating: 3.0,
-//         price: 59.25,
-//     },
-//     {
-//         id: "0006",
-//         image: Image6,
-//         title: "Turkey Burger",
-//         paragraph: "Turkey, cheddar cheese, onion, lettuce, tomatoes, pickles",
-//         rating: 3,
-//         price: 79.18,
-//     },
-//     {
-//         id: "0007",
-//         image: Image7,
-//         title: "Smokey House",
-//         paragraph: "patty, cheddar cheese, onion, lettuce, tomatoes, pickles",
-//         rating: 2.5,
-//         price: 99.19,
-//     },
-//     {
-//         id: "0008",
-//         image: Image8,
-//         title: "Classic Burger",
-//         paragraph: "cheddar cheese, ketchup, mustard, pickles, onion",
-//         rating: 2.0,
-//         price: 89.12,
-//     },
-//     // Add more mock data objects as needed
-// ];
+// Mock
 const Section3 = () => {
     const [brandData, setBrandData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -133,30 +65,37 @@ const Section3 = () => {
             <Container>
                 <Row>
                     <Col lg={{ span: 8, offset: 2 }} className="text-center mb-5">
-                        <h2>OUR CRAZY BURGERS</h2>
+                        <h2>ĐI ĐẾN NƠI BẠN MUỐN!</h2>
                         <p className="para">
-                            Aliquam a augue suscipit, luctus neque purus ipsum neque undo
-                            dolor primis libero tempus, blandit a cursus varius magna
+                            Khám phá và trải nghiệm những địa điểm ăn uống và giải trí
+                             xung quanh bạn, quyết định nơi bạn sẽ đến với thông tin của chúng tôi
                         </p>
                     </Col>
                 </Row>
                 <Row>
-                    {brandData.map((brand) => (
-                        <Cards
-                            id={brand.id}
-                            name={brand.name}
-                            image={brand.image}
-                            status={brand.status}
-                            priority={brand.priority}
-                            phone={brand.phone}
-                            google={brand.google}
-                            location={brand.location}
-                            facebook={brand.facebook}
-                            url_slug={brand.url_slug}
-                            rating={brand.rating || 0}
-                            renderRatingIcons={renderRatingIcons}
-                        />
-                    ))}
+                    <Col lg={{ span: 2 }}>
+
+                    </Col>
+                    <Col lg={{ span: 10 }}>
+                        <Row>
+                        {brandData.map((brand) => (
+                            <Cards
+                                id={brand.id}
+                                name={brand.name}
+                                image={brand.image}
+                                status={brand.status}
+                                priority={brand.priority}
+                                phone={brand.phone}
+                                google={brand.google}
+                                location={brand.location}
+                                facebook={brand.facebook}
+                                url_slug={brand.url_slug}
+                                rating={brand.rating || 0}
+                                renderRatingIcons={renderRatingIcons}
+                            />
+                        ))}
+                        </Row>
+                    </Col>
                 </Row>
 
                 <Row className="pt-5">

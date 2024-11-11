@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Layout from "../../components/Layouts/Layout";
 import "../../styles/HomeStyle.css";
+import "../../styles/Custom.css";
 import Section1 from "./Section1";
 import Section2 from "./Section2";
 import Section3 from "./Section3";
@@ -17,19 +18,20 @@ const Home = () => {
       <Layout>
         {/* Home Section Hero Banner */}
         <Section3 />
-        
-        <Section1 />
+        <Section2 />
+
+        {/* <Section1 /> */}
 
         {/* Home Section About */}
-        <Section2 />
+       
 
         {/* Home Section Menu */}
 
         {/* Home Section Promotion */}
-        <Section4 />
+        {/* <Section4 /> */}
 
         {/* Home Section Shop */}
-        <Section5 />
+        {/* <Section5 /> */}
 
         {/* Home Section Blog */}
         <Section6 />

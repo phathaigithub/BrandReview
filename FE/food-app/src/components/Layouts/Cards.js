@@ -13,18 +13,19 @@ function Cards({ id, name, image, status, priority, phone, google, location, fac
         </div>
         <Card.Body>
           <div className="d-flex align-items-center justify-content-between">
-            <div className="item_rating">{renderRatingIcons(rating)}</div>
+          <div className="menu_price">
+              <h5 className="mb-0">{rating.toFixed(1)} <i class="bi bi-star-fill"></i></h5>
+            </div>
+            {/* <div className="item_rating">{renderRatingIcons(rating)}</div> */}
             <div className="wishlist">
               <i class="bi bi-heart"></i>
             </div>
           </div>
           <Card.Title>{name}</Card.Title>
-          <Card.Text>{location}</Card.Text>
+          <Card.Text className="hidden-two-line">{location}</Card.Text>
 
           <div className="d-flex align-items-center justify-content-between">
-            <div className="menu_price">
-              <h5 className="mb-0">${rating}</h5>
-            </div>
+            
             <div className="add_to_card">
               <Link to="/">
                 <i class="bi bi-bag me-2"></i>
