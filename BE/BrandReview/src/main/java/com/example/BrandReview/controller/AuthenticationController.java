@@ -13,12 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-//@CrossOrigin
+@CrossOrigin
 public class AuthenticationController {
 
     AuthenticationService authenticationService; //
 
-    @CrossOrigin(origins = "http://localhost:3001", allowedHeaders = "*", allowCredentials = "true", methods = {RequestMethod.POST})
     @PostMapping("/token")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationResquest request) {
         var result = authenticationService.authenticate(request);

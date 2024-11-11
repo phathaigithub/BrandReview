@@ -28,7 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/employee/add", "/auth/token", "/auth/logout", "/auth/refresh, /**"
+            "/employee/add", "/auth/token", "/auth/logout", "/auth/refresh, /**, /brand/**"
     };
 
     @Value("{app.jwt.sign-key}")
@@ -37,7 +37,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("http://localhost:3001"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+                    config.setAllowCredentials(true);
+                    return config;
+                }))
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(HttpMethod.GET, "/brand/**").permitAll()  // Allow all GET requests to /brand/**
                         .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll() // được sử dụng mà không cần xác thức
                         .anyRequest().authenticated()
                 );
@@ -63,19 +72,20 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of("http://localhost:3001")); // Frontend origin
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        config.setAllowCredentials(true); // Allow cookies and credentials
-
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter();
-    }
+//
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration config = new CorsConfiguration();
+//
+//        config.setAllowedOrigins(List.of("http://localhost:3001")); // Frontend origin
+//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+//        config.setAllowCredentials(true); // Allow cookies and credentials
+//
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter();
+//    }
 
 
 

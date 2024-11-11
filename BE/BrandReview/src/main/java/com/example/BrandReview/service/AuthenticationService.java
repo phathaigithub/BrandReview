@@ -37,9 +37,10 @@ public class AuthenticationService {
         var employee = employeeRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        boolean auth = passwordEncoder.matches(request.getPassword(), employee.getPassword());
+//        boolean auth = passwordEncoder.matches(request.getPassword(), employee.getPassword());
+        boolean auth = employee.getPassword().equals(request.getPassword());
 
         if (!auth) {
             throw new AppException(ErrorCode.AUTHENTICATED);
