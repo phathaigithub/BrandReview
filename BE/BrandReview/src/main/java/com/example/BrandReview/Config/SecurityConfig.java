@@ -46,8 +46,9 @@ public class SecurityConfig {
                     return config;
                 }))
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(HttpMethod.PUT,"/employee/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/employee/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/getAll").permitAll()  // Allow all GET requests to /brand/**
+                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**").permitAll()  // Allow all GET requests to /brand/**
                         .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()// được sử dụng mà không cần xác thức
                         .anyRequest().authenticated()
                 );

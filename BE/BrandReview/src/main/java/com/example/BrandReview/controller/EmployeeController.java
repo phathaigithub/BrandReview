@@ -4,9 +4,19 @@ import com.example.BrandReview.dto.response.ApiResponse;
 import com.example.BrandReview.model.Employee;
 import com.example.BrandReview.service.EmployeeService;
 import jakarta.validation.Valid;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -46,6 +56,54 @@ public class EmployeeController {
         response.setResult(updated);
 
         return response;
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportEmployeesToExcel() {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Employees");
+            List<Employee> employees = employeeService.getAllEmployees();
+
+            // Tạo dòng header
+            Row headerRow = sheet.createRow(0);
+            String[] columnHeaders = {"ID", "Username", "Name", "Gender", "Phone", "Email", "Position", "InitDate"};
+            for (int i = 0; i < columnHeaders.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columnHeaders[i]);
+            }
+
+            // Ghi dữ liệu nhân viên vào các dòng tiếp theo
+            int rowNum = 1;
+            for (Employee employee : employees) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(employee.getId());
+                row.createCell(1).setCellValue(employee.getUsername());
+                row.createCell(2).setCellValue(employee.getName());
+                row.createCell(3).setCellValue(employee.getGender());
+                row.createCell(4).setCellValue(employee.getPhone());
+                row.createCell(5).setCellValue(employee.getEmail());
+                row.createCell(6).setCellValue(employee.getPosition().getName());
+                row.createCell(7).setCellValue(employee.getInitDate().toString());
+            }
+
+            // Tạo output stream và trả về file Excel dưới dạng byte[]
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            byte[] excelData = outputStream.toByteArray();
+
+            // Thiết lập headers cho response
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=employees.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .body(excelData);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 

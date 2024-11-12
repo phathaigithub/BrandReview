@@ -4,13 +4,13 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/
 const DeleteConfirmDialog = ({ open, onClose, onConfirm }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Confirm Delete</DialogTitle>
+      <DialogTitle>Xác nhận xoá</DialogTitle>
       <DialogContent>
-        <p>Are you sure you want to delete this employee?</p>
+        <p>Bạn có chắc muốn xoá nhân viên này không?</p>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={onConfirm} color="primary">Delete</Button>
+        <Button onClick={onClose} color="secondary">Thoát</Button>
+        <Button onClick={onConfirm} color="primary">Xác nhận</Button>
       </DialogActions>
     </Dialog>
   );
