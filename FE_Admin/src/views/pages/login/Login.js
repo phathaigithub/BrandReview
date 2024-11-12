@@ -22,24 +22,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const response = await axios.post('http://localhost:8080/auth/token', {
-  //       username,
-  //       password,
-  //     });
-
-  //     if (response.data && response.data.result) {
-  //       localStorage.setItem('authToken', response.data.result.token);
-  //       navigate('/home');
-  //     }
-  //   } catch (err) {
-  //     setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
-  //   }
-  // };
+    
   const handleLogin = async (e) => {
     e.preventDefault();
   

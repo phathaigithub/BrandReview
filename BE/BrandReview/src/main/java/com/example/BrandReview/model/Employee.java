@@ -41,7 +41,7 @@ public class Employee {
     private LocalDateTime InitDate = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PositionID")
+    @JoinColumn(name = "Position")
     private Position position;
 
 

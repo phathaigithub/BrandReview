@@ -30,14 +30,14 @@ public class AuthenticationService {
 
 
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Use HS512 for stronger encryption
-    private static final long EXPIRATION_TIME = 3600 * 1000;
+    private static final long EXPIRATION_TIME = 3600 * 1000 * 24;
 
 
     public AuthenticationResponse authenticate(AuthenticationResquest request) {
         var employee = employeeRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 //        boolean auth = passwordEncoder.matches(request.getPassword(), employee.getPassword());
         boolean auth = employee.getPassword().equals(request.getPassword());

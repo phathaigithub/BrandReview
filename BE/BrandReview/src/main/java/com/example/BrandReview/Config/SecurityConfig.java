@@ -28,7 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/employee/add", "/auth/token", "/auth/logout", "/auth/refresh, /**, /brand/**"
+            "/employee/add", "/auth/token", "/auth/logout"
     };
 
     @Value("{app.jwt.sign-key}")
@@ -46,8 +46,9 @@ public class SecurityConfig {
                     return config;
                 }))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.GET, "/brand/**").permitAll()  // Allow all GET requests to /brand/**
-                        .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll() // được sử dụng mà không cần xác thức
+                        .requestMatchers(HttpMethod.DELETE, "/employee/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/getAll").permitAll()  // Allow all GET requests to /brand/**
+                        .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()// được sử dụng mà không cần xác thức
                         .anyRequest().authenticated()
                 );
         http

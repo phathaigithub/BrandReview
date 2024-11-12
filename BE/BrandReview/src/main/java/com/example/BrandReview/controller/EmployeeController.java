@@ -27,4 +27,26 @@ public class EmployeeController {
     public List<Employee> getAll() {
         return employeeService.getAllEmployees();
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ApiResponse<String> delete(@PathVariable("id") int employeeId) {
+        ApiResponse<String> response = new ApiResponse<>();
+
+        employeeService.deleteEmployee(employeeId);
+        response.setResult("Employee deleted successfully");
+
+        return response;
+    }
+
+    @PutMapping("/edit/{id}")
+    public ApiResponse<Employee> edit(@PathVariable("id") int employeeId, @RequestBody @Valid Employee updatedEmployee) {
+        ApiResponse<Employee> response = new ApiResponse<>();
+
+        Employee updated = employeeService.updateEmployee(employeeId, updatedEmployee);
+        response.setResult(updated);
+
+        return response;
+    }
+
+
 }
