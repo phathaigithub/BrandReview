@@ -24,7 +24,7 @@ public class BrandController {
         return brandService.getAllBrands();
     }
 
-    @GetMapping("slug/{brand_slug}")
+    @GetMapping("/slug/{brand_slug}")
     public ApiResponse<Brand> getBrandBySlug(@PathVariable String brand_slug) {
         ApiResponse<Brand> response = new ApiResponse<>();
         response.setResult(brandService.getBrandBySlug(brand_slug)); // Trả về json trạng thái của request

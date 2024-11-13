@@ -17,9 +17,11 @@ const Home = () => {
     <>
       <Layout>
         {/* Home Section Hero Banner */}
-        <Section3 />
         <Section2 />
+        <Section3 />
 
+{/*         
+        <Section6 /> */}
         {/* <Section1 /> */}
 
         {/* Home Section About */}
@@ -34,7 +36,6 @@ const Home = () => {
         {/* <Section5 /> */}
 
         {/* Home Section Blog */}
-        <Section6 />
 
         {/* Home Section Contact */}
         <Section7 />

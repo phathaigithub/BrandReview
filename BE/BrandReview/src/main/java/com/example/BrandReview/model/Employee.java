@@ -39,9 +39,8 @@ public class Employee {
     private String gender;
     @Column(name = "InitDate")
     private LocalDateTime InitDate = LocalDateTime.now();
-
     @ManyToOne
-    @JoinColumn(name = "Postion", nullable = false)
+    @JoinColumn(name = "PositionID", nullable = false)
     private Position position;
 
 

@@ -1,5 +1,6 @@
 package com.example.BrandReview.model;
-import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 //import jakarta.validation.constraints.Email;
 //import jakarta.validation.constraints.Size;
@@ -18,29 +19,32 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Brand {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
-    private String status;
-    private int priority;
-    private String phone;
-    private String google;
-    private String location;
-    private String facebook;
-    private String image;
-    private String slug;
+    @ManyToOne
+    @JoinColumn(name = "UserID", nullable = false)
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "TypeID", nullable = false)
-    private BrandType brandType;
+    @JoinColumn(name = "BrandID", nullable = false)
+    @JsonIgnore
+    private Brand brand;
 
-    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews;
+    private boolean isValid;
+    private String content;
+    private double SpaceScore;
+    private double QualityScore;
+    private double LocationScore;
+    private double ServiceScore;
+    private double PriceScore;
 
+    // @ManyToOne
+    // @JoinColumn(name = "TypeID", nullable = false)
+    // private BrandType brandType;
     @Column(name = "InitDate")
     private LocalDateTime InitDate;
 
