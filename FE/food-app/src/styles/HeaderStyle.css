@@ -2,7 +2,7 @@
 header .navbar {
   position: absolute;
   width: 100%;
-  background-color: transparent;
+  background-color: white;
   z-index: 1000;
 }
 
@@ -41,7 +41,7 @@ header .navbar.sticky {
 header .logo img {
   width: auto;
   max-width: inherit;
-  max-height: 80px;
+  max-height: 50px;
 }
 header .nav-link {
   display: inline-flex;

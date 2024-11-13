@@ -1,195 +1,152 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import Cards from "../../components/Layouts/Cards";
 import { Link } from "react-router-dom";
+import BrandTab from "./BrandTab";
+import ReviewTab from "./ReviewTab";
 
-// Mock Data Cards
-
-// const mockData = [
-//     {
-//         id: "0001",
-//         image: Image1,
-//         title: "Crispy Chicken",
-//         paragraph: "Chicken breast, chilli sauce, tomatoes, pickles, coleslaw",
-//         rating: 7.25,
-//         price: 99.15,
-//     },
-//     {
-//         id: "0002",
-//         image: Image2,
-//         title: "Ultimate Bacon",
-//         paragraph: "House patty, cheddar cheese, bacon, onion, mustard",
-//         rating: 4.5,
-//         price: 99.32,
-//     },
-//     {
-//         id: "0003",
-//         image: Image3,
-//         title: "Black Sheep",
-//         paragraph: "American cheese, tomato relish, avocado, lettuce, red onion",
-//         rating: 4,
-//         price: 69.15,
-//     },
-//     {
-//         id: "0004",
-//         image: Image4,
-//         title: "Vegan Burger",
-//         paragraph: "House patty, cheddar cheese, bacon, onion, mustard",
-//         rating: 3.5,
-//         price: 99.25,
-//     },
-//     {
-//         id: "0005",
-//         image: Image5,
-//         title: "Double Burger",
-//         paragraph: "2 patties, cheddar cheese, mustard, pickles, tomatoes",
-//         rating: 3.0,
-//         price: 59.25,
-//     },
-//     {
-//         id: "0006",
-//         image: Image6,
-//         title: "Turkey Burger",
-//         paragraph: "Turkey, cheddar cheese, onion, lettuce, tomatoes, pickles",
-//         rating: 3,
-//         price: 79.18,
-//     },
-//     {
-//         id: "0007",
-//         image: Image7,
-//         title: "Smokey House",
-//         paragraph: "patty, cheddar cheese, onion, lettuce, tomatoes, pickles",
-//         rating: 2.5,
-//         price: 99.19,
-//     },
-//     {
-//         id: "0008",
-//         image: Image8,
-//         title: "Classic Burger",
-//         paragraph: "cheddar cheese, ketchup, mustard, pickles, onion",
-//         rating: 2.0,
-//         price: 89.12,
-//     },
-//     // Add more mock data objects as needed
-// ];
+// Mock
 const Section3 = () => {
-    const [brandData, setBrandData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [brandData, setBrandData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('Brand'); // Track active tab
+  const [category, setCategory] = useState(''); // Track selected category
+  
+  // Fetch brands when the component is mounted
+  useEffect(() => {
+    fetch("http://localhost:8080/brand/getAllBrands")
+      .then(response => response.json())
+      .then(data => {
+        const brandList = data.map((brand, index) => ({
+          id: brand.id,
+          name: brand.name,
+          status: brand.status,
+          priority: brand.priority,
+          phone: brand.phone,
+          google: brand.google,
+          location: brand.location,
+          facebook: brand.facebook,
+          image: brand.image,
+          slug: brand.slug,
+          rating: brand.rating || 0,
+          type: brand.brandType
+        }));
+        setBrandData(brandList);
+        setLoading(false);
+      })
+      .catch(error => {
+        setError("Error fetching data: " + error.message);
+        setLoading(false);
+      });
+  }, []);
 
-    // Fetch brands when the component is mounted
-    useEffect(() => {
-        fetch("http://localhost:8080/brand/getAllBrands")
-            .then(response => response.json()) // Convert response to JSON
-            .then(data => {
-                // Map fetched data to match mockData structure
-                const brandList = data.map((brand, index) => ({
-                    id: brand.id,
-                    name: brand.name,
-                    status: brand.status,
-                    priority: brand.priority,
-                    phone: brand.phone,
-                    google: brand.google,
-                    location: brand.location,
-                    facebook: brand.facebook,
-                    image: brand.image,
-                    url_slug: brand.url_slug,
-                    rating: brand.rating || 0
-                }));
-                setBrandData(brandList); // Update mockData with fetched brand data
-                setLoading(false);
-            })
-            .catch(error => {
-                setError("Error fetching data: " + error.message);
-                setLoading(false);
-            });
-    }, []); // Empty dependency array to run the effect once when the component mounts
-    // if (loading) {
-    //     return <p>Loading...</p>;
-    // }
 
-    // if (error) {
-    //     return <p>{error}</p>;
-    // }
-    const renderRatingIcons = (rating) => {
-        const stars = [];
+  const renderRatingIcons = (rating) => {
+    const stars = [];
+    for (let i = 0; i < 10; i++) {
+      if (rating > 0.5) {
+        stars.push(<i key={i} className="bi bi-star-fill"></i>);
+        rating--;
+      } else if (rating > 0 && rating < 1) {
+        stars.push(<i key={"half"} className="bi bi-star-half"></i>);
+        rating--;
+      } else {
+        stars.push(<i key={`empty${i}`} className="bi bi-star"></i>);
+      }
+    }
+    return stars;
+  };
+  const changeTab = (tab) => {
+    setActiveTab(tab);
+    setCategory("");
+  }
+  const changeCategory = (cate) => {
+    setCategory(cate);
+    setActiveTab("Brand");
+  }
+  return (
+    <section className="menu_section py-0 pt-3">
+      <Container>
+        
+        <Row style={{ minHeight: '800px' }}>
+          <Col lg={{ span: 2 }}>
+            <Row className="bg-white border">
+              <div className="text-center pt-2 me-2 d-flex">
+                <span className="p-2 ps-0"><i className="bi bi-body-text"></i></span>
+                <h4 className="align-content-center">KHÁM PHÁ</h4>
+              </div>
+              <ul className="nav flex-column bg-white border-top pe-0">
+                <li className="nav-item">
+                  <a
+                    href="javascript:void(0);"
+                    className={`sidebar nav-link ${activeTab === 'Brand' ? 'active' : ''}`}
+                    onClick={() => {changeTab("Brand");}}
+                  >
+                    Thương hiệu
+                    <i className={`bi bi-chevron-down ${activeTab === 'Brand' ? '' : 'd-none'}`}></i>
+                  </a>
+                  <a href="javascript:void(0);" className={`sidebar nav-link ps-4 ${category === 'Ăn uống' ? 'active' : ''}`} onClick={() => changeCategory('Ăn uống')}>
+                    Ăn uống
+                  </a>
+                  <a href="javascript:void(0);" className={`sidebar nav-link ps-4 ${category === 'Giải trí' ? 'active' : ''}`} onClick={() => changeCategory('Giải trí')}>
+                    Giải trí
+                  </a>
+                  <a href="javascript:void(0);" className={`sidebar nav-link ps-4 ${category === 'Du lịch' ? 'active' : ''}`} onClick={() => changeCategory('Du lịch')}>
+                    Du lịch
+                  </a>
+                  <a href="javascript:void(0);" className={`sidebar nav-link ps-4 ${category === 'Mua sắm' ? 'active' : ''}`} onClick={() => changeCategory('Mua sắm')}>
+                    Mua sắm
+                  </a>
+                </li>
+                <li className="nav-item border-top ">
+                  <a
+                    className={`sidebar nav-link ${activeTab === 'Review' ? 'active' : ''}`}
 
-        for (let i = 0; i < 10; i++) {
-            if (rating > 0.5) {
-                stars.push(<i key={i} className="bi bi-star-fill"></i>);
-                rating--;
-            } else if (rating > 0 && rating < 1) {
-                stars.push(<i key={"half"} className="bi bi-star-half"></i>);
-                rating--;
-            } else {
-                stars.push(<i key={`empty${i}`} className="bi bi-star"></i>);
-            }
-        }
-        return stars;
-    };
-
-    return (
-        <section className="menu_section">
-            <Container>
-                <Row>
-                    <Col lg={{ span: 8, offset: 2 }} className="text-center mb-5">
-                        <h2>OUR CRAZY BURGERS</h2>
-                        <p className="para">
-                            Aliquam a augue suscipit, luctus neque purus ipsum neque undo
-                            dolor primis libero tempus, blandit a cursus varius magna
-                        </p>
-                    </Col>
-                </Row>
-                <Row>
-                    {brandData.map((brand) => (
-                        <Cards
-                            id={brand.id}
-                            name={brand.name}
-                            image={brand.image}
-                            status={brand.status}
-                            priority={brand.priority}
-                            phone={brand.phone}
-                            google={brand.google}
-                            location={brand.location}
-                            facebook={brand.facebook}
-                            url_slug={brand.url_slug}
-                            rating={brand.rating || 0}
-                            renderRatingIcons={renderRatingIcons}
-                        />
-                    ))}
-                </Row>
-
-                <Row className="pt-5">
-                    <Col sm={6} lg={5}>
-                        <div className="ads_box ads_img1 mb-5 mb-md-0">
-                            <h4 className="mb-0">GET YOUR FREE</h4>
-                            <h5>CHEESE FRIES</h5>
-                            <Link to="/" className="btn btn_red px-4 rounded-0">
-                                Learn More
-                            </Link>
-                        </div>
-                    </Col>
-                    <Col sm={6} lg={7}>
-                        <div className="ads_box ads_img2">
-                            <h4 className="mb-0">GET YOUR FREE</h4>
-                            <h5>CHEESE FRIES</h5>
-                            <Link to="/" className="btn btn_red px-4 rounded-0">
-                                Learn More
-                            </Link>
-                        </div>
-                    </Col>
-                </Row>
-            </Container>
-        </section>
-    );
+                    onClick={() => changeTab("Review")}
+                  >
+                    Đánh giá
+                    <i className={`bi bi-chevron-right ${activeTab === 'Review' ? '' : 'd-none'}`}></i>
+                  </a>
+                </li>
+              </ul>
+            </Row>
+          </Col>
+          <Col lg={{ span: 10 }}>
+            <Row>
+              {activeTab === 'Brand' && (
+                <BrandTab
+                  brandData={brandData}
+                  renderRatingIcons={renderRatingIcons}
+                  type={category}
+                />
+              )}
+              {activeTab === 'Review' && <ReviewTab />}
+            </Row>
+          </Col>
+        </Row>
+        <Row className="pt-5">
+          <Col sm={6} lg={5}>
+            <div className="ads_box ads_img1 mb-5 mb-md-0">
+              <h4 className="mb-0">GET YOUR FREE</h4>
+              <h5>CHEESE FRIES</h5>
+              <Link to="/" className="btn btn_red px-4 rounded-0">
+                Learn More
+              </Link>
+            </div>
+          </Col>
+          <Col sm={6} lg={7}>
+            <div className="ads_box ads_img2">
+              <h4 className="mb-0">GET YOUR FREE</h4>
+              <h5>CHEESE FRIES</h5>
+              <Link to="/" className="btn btn_red px-4 rounded-0">
+                Learn More
+              </Link>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </section>
+  );
 };
-// Rating Logical Data
-
-
-// function Section3({ brandList }) {
-//     return (
-
-//     );
-// }
 
 export default Section3;
