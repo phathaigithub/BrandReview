@@ -33,10 +33,6 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public Employee saveEmployee(Employee employee) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//        LocalDate birthDate = LocalDate.parse(employee.getBirth().toString(), formatter);
-//        employee.setBirth(birthDate);
-        // Fetch the "employee" position with ID 1
         Position defaultPosition = positionRepository.findById(3)
                 .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND)); // Ensure the default position exists
 

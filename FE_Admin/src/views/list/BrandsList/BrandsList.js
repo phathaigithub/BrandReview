@@ -1,102 +1,351 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button, Box } from '@mui/material';
-
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
-  {
-    field: 'actions',
-    headerName: '',
-    width: 120,
-    sortable: false,
-    renderCell: (params) => (
-        <button 
-        type="button" 
-        class="btn btn-warning text-white"
-        onClick={(event) => {
-            event.stopPropagation(); 
-          }}
-        >
-            Chỉnh sửa
-        </button>
-    )
-    },
-    {
-    field: 'actions2',
-    headerName: '',
-    width: 110,
-    sortable: false,
-    renderCell: (params) => (
-        <button 
-        type="button" 
-        class="btn btn-danger text-white"
-        onClick={(event) => {
-            event.stopPropagation(); 
-          }}
-        >
-            Xoá
-            </button> 
-    )
-    },
-];
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
-
-const paginationModel = { page: 0, pageSize: 7 };
+import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog'; 
+import ExportButtonBrands from './ExportButtonBrands.js';
 
 const BrandsList = () => {
+  
+  const columns = [
+    {
+      field: 'actions',
+      headerName: '',
+      width: 120,
+      sortable: false,
+      renderCell: (params) => (
+        <button
+          type="button"
+          className="btn btn-warning text-white"
+          onClick={() => handleEditClick(params.row)}
+        >
+          Chỉnh sửa
+        </button>
+      ),
+    },
+    {
+      field: 'actions2',
+      headerName: '',
+      width: 110,
+      sortable: false,
+      renderCell: (params) => (
+        <button
+          type="button"
+          className="btn btn-danger text-white"
+          onClick={() => handleDeleteClick(params.row.id)}
+        >
+          Xoá
+        </button>
+      ),
+    },
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'name', headerName: 'Tên thương hiệu', width: 130 },
+    { field: 'phone', headerName: 'Số điện thoại', width: 150 },
+    { field: 'location', headerName: 'Địa chỉ', width: 80 },
+    { field: 'google', headerName: 'Google URL', width: 80 },
+    { field: 'facebook', headerName: 'Facebook URL', width: 150 },
+    { field: 'initDate', headerName: 'Ngày tạo', width: 180 },
+  ];
+  const paginationModel = { page: 0, pageSize: 7 };
+  const [rows, setRows] = useState([]);
+
+  const [open, setOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false)
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    location: '',
+    google: '',
+    facebook: ''
+  });
+
+  const handleClickOpen = () => {
+    setFormData({
+      name: '',
+      phone: '',
+      location: '',
+      google: '',
+      facebook: ''
+    });
+    setOpen(true);
+  };
+  const handleClose = () => setOpen(false);
+
+  const handleClickOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  // Handle add brand
+  const [brandAdded, setBrandAdded] = useState(false);
+  const handleAddSubmit = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/brand/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert('Brand added successfully');
+        handleClose();
+        setBrandAdded(!brandAdded);
+      } else {
+        alert('Failed to add brand');
+      }
+    } catch (error) {
+      console.error('Error adding brand:', error);
+      alert('Error occurred while adding brand');
+    }
+  };
+ // END ADD brand
+
+ useEffect(() => {
+  const fetchBrands = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/brand/getAllBrands');
+      if (response.ok) {
+        const data = await response.json();
+        const mappedData = data.map((brand) => ({
+          ...brand 
+        }));
+        setRows(mappedData);
+      } else {
+        console.error('Failed to fetch data');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchBrands();
+}, [brandAdded]);
+
+// Handle Delete operation
+const [brandToDelete, setBrandToDelete] = useState(null);
+const [openDialog, setOpenDialog] = useState(false);
+
+const handleDeleteClick = (brandId) => {
+  setBrandToDelete(brandId);
+  setOpenDialog(true); // Open the dialog
+};
+
+
+// Close the dialog without deleting
+const handleCloseDialog = () => {
+  setOpenDialog(false);
+  setBrandToDelete(null);
+};
+const handleDelete = async (brandId) => {
+
+  try {
+    const response = await fetch(`http://localhost:8080/brand/delete/${brandToDelete}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      // Update the state to remove the deleted brand
+      setRows((prevRows) => prevRows.filter((row) => row.id !== brandToDelete));
+    } else {
+      alert('Failed to delete brand');
+    }
+  } catch (error) {
+    console.error('Error deleting brand:', error);
+    alert('Error occurred while deleting brand');
+  }
+  handleCloseDialog();
+};
+
+//// EDITTTTT
+const handleEditClick = (brand) => {
+  setFormData({
+    id: brand.id,
+    brandname: brand.brandname,
+    password: brand.password, // Leave blank if password shouldn't be shown
+    phone: brand.phone,
+    email: brand.email,
+    name: brand.name,
+    birth: brand.birth,
+    gender: brand.gender,
+  });
+  setOpenEdit(true);
+};
+
+const handleSubmitEdit = async () => {
+  try {
+    const response = await fetch(`http://localhost:8080/brand/edit/${formData.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      alert('Brand updated successfully');
+      handleClose();
+      setBrandAdded(!brandAdded);
+      setOpenEdit(false);
+    } else {
+      alert('Failed to update brand');
+    }
+  } catch (error) {
+    console.error('Error updating brand:', error);
+    alert('Error occurred while updating brand');
+  }
+};
+// END EDITT
+
   return (
     <>
-    <Box display="flex" justifyContent="space-between" marginBottom={2}>
-        <Button variant="contained" color="primary">Thêm cửa hàng</Button>
-        <Button variant="outlined" color="success">Xuất danh sách</Button>
-    </Box>
-    <Paper sx={{ height: 500, width: '100%' }}>
-        
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{ pagination: { paginationModel } }} 
-        pageSizeOptions={[5, 10]}
-        sx={{
-          border: 0,
-          '.css-11cfq65-MuiTablePagination-displayedRows': {
-            marginTop: '15px',
-          },
-        }}
+      <Box display="flex" justifyContent="space-between" marginBottom={2}>
+        <Button variant="contained" color="primary"  onClick={handleClickOpen}>Thêm cửa hàng</Button>
+        <ExportButtonBrands />
+      </Box>
+      <Paper sx={{ height: 500, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10]}
+          sx={{
+            border: 0,
+            '.css-11cfq65-MuiTablePagination-displayedRows': {
+              marginTop: '15px',
+            },
+          }}
+        />
+      </Paper>
+
+      {/* Popup Register Form */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Thêm cửa hàng</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Tên cửa hàng"
+            type="text"
+            fullWidth
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Số điện thoại"
+            type="text"
+            fullWidth
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+          />
+          <TextField 
+            margin="dense"
+            label="Địa chỉ"
+            type="text"
+            fullWidth
+            name="location"
+            value={formData.location}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Google URL"
+            type="text"
+            fullWidth
+            name="google"
+            value={formData.google}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Facebook URL"
+            type="text"
+            fullWidth
+            name="facebook"
+            value={formData.facebook}
+            onChange={handleInputChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="secondary">Huỷ</Button>
+          <Button onClick={handleAddSubmit} color="primary">Thêm cửa hàng</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openEdit} onClose={handleCloseEdit}>
+        <DialogTitle>Chỉnh sửa thông tin cửa hàng</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Tên cửa hàng"
+            type="text"
+            fullWidth
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Số điện thoại"
+            type="text"
+            fullWidth
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+          />
+          <TextField 
+            margin="dense"
+            label="Địa chỉ"
+            type="text"
+            fullWidth
+            name="location"
+            value={formData.location}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Google URL"
+            type="text"
+            fullWidth
+            name="google"
+            value={formData.google}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Facebook URL"
+            type="text"
+            fullWidth
+            name="facebook"
+            value={formData.facebook}
+            onChange={handleInputChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEdit} color="secondary">Huỷ</Button>
+          <Button onClick={handleSubmitEdit} color="primary">Cập nhật</Button>
+        </DialogActions>
+      </Dialog>
+
+
+      
+      <DeleteConfirmDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        onConfirm={handleDelete}
       />
-    </Paper>
     </>
-  );
-}
-
-
-
+);
+};
 export default BrandsList;

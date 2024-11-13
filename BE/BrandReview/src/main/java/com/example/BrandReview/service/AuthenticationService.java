@@ -39,8 +39,8 @@ public class AuthenticationService {
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-//        boolean auth = passwordEncoder.matches(request.getPassword(), employee.getPassword());
-        boolean auth = employee.getPassword().equals(request.getPassword());
+        boolean auth = passwordEncoder.matches(request.getPassword(), employee.getPassword());
+//        boolean auth = employee.getPassword().equals(request.getPassword());
 
         if (!auth) {
             throw new AppException(ErrorCode.AUTHENTICATED);

@@ -2,12 +2,17 @@ package com.example.BrandReview.service;
 
 import com.example.BrandReview.exception.AppException;
 import com.example.BrandReview.exception.ErrorCode;
+import com.example.BrandReview.model.Employee;
+import com.example.BrandReview.model.Position;
 import com.example.BrandReview.model.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.BrandReview.responsitory.UserRepository;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import java.util.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -24,13 +29,8 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User saveUser(User user) {
-         if (userRepository.existsByUsername(user.getUsername())){
-             throw new AppException(ErrorCode.USER_EXISTED);
-        } else if (userRepository.existsByEmail(user.getEmail())) {
-             throw new AppException(ErrorCode.EMAIL_EXISTED);
-         }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Save the employee
         return userRepository.save(user);
     }
 
@@ -40,15 +40,27 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void deleteUser(User user) {
-        userRepository.delete(user);
+    public void deleteUser(int userid) {
+        userRepository.deleteById(userid);
     }
 
     @Override
-    public User getUserById(int id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public Optional<T> getUserById(int id) {
+        return Optional.empty();
     }
 
+    @Override
+    public User updateUser(int userid, User updateUser) {
+        User existingUser = userRepository.findById(userid)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
+        existingUser.setUsername(updateUser.getUsername());
+        existingUser.setName(updateUser.getName());
+        existingUser.setPhone(updateUser.getPhone());
+        existingUser.setEmail(updateUser.getEmail());
+        existingUser.setGender(updateUser.getGender());
+        existingUser.setBirth(updateUser.getBirth());
+
+        return userRepository.save(existingUser);
+    }
 }
