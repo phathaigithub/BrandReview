@@ -15,8 +15,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,10 +26,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/employee/**","/user/**", "/auth/token", "/auth/logout"
+            "/employee/**","/user/**", "/auth/**", "/auth/logout", "/review/**", "/uploads/**"
     };
 
-    @Value("{app.jwt.sign-key}")
+    @Value("${app.jwt.sign-key}")
     private String signKey;
 
     @Bean
@@ -39,7 +37,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3001"));
+                    config.setAllowedOrigins(List.of("http://localhost:3001", "http://localhost:3000"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
                     config.setAllowCredentials(true);
@@ -48,8 +46,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.PUT,"/employee/**","/user/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/employee/**","/user/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**","/user/**").permitAll()  // Allow all GET requests to /brand/**
-                        .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()// được sử dụng mà không cần xác thức
+                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**","/user/**", "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );
         http
@@ -65,6 +63,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     JwtDecoder jwtDecoder(){
         SecretKeySpec secretKeySpec = new SecretKeySpec(signKey.getBytes(),"HS256");
@@ -73,22 +72,4 @@ public class SecurityConfig {
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
     }
-
-//
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        config.setAllowedOrigins(List.of("http://localhost:3001")); // Frontend origin
-//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-//        config.setAllowCredentials(true); // Allow cookies and credentials
-//
-//        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter();
-//    }
-
-
-
 }

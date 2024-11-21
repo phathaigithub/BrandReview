@@ -73,6 +73,7 @@ const BrandTab = ({ brandData, renderRatingIcons, type }) => {
           slug={brand.slug}
           rating={brand.rating || 0}
           type={brand.type}
+          reviews={brand.reviews}
           renderRatingIcons={renderRatingIcons}
         />
       ))}

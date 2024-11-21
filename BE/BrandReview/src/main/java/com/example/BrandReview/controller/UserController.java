@@ -1,6 +1,8 @@
 package com.example.BrandReview.controller;
 
 import com.example.BrandReview.dto.response.ApiResponse;
+import com.example.BrandReview.exception.AppException;
+import com.example.BrandReview.exception.ErrorCode;
 import com.example.BrandReview.model.Employee;
 import com.example.BrandReview.model.User;
 import com.example.BrandReview.service.UserService;
@@ -31,8 +33,12 @@ public class UserController {
     @PostMapping("/add")
     public ApiResponse<User> add(@RequestBody @Valid User user) {
         ApiResponse<User> response = new ApiResponse<>();
-        response.setResult(userService.saveUser(user)); // Trả về json trạng thái của request
+        User savedUser = userService.saveUser(user);
+        response.setCode(200); // HTTP 200 OK
+        response.setMessage("User created successfully");
+        response.setResult(savedUser);
         return response;
+
     }
 
     @GetMapping("/getAll")
@@ -79,12 +85,11 @@ public class UserController {
             for (User user : users) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(user.getId());
-                row.createCell(1).setCellValue(user.getUsername());
-                row.createCell(2).setCellValue(user.getName());
-                row.createCell(3).setCellValue(user.getGender());
-                row.createCell(4).setCellValue(user.getPhone());
-                row.createCell(5).setCellValue(user.getEmail());
-                row.createCell(6).setCellValue(user.getInitDate().toString());
+                row.createCell(1).setCellValue(user.getName());
+                row.createCell(2).setCellValue(user.getGender());
+                row.createCell(3).setCellValue(user.getPhone());
+                row.createCell(4).setCellValue(user.getEmail());
+                row.createCell(5).setCellValue(user.getInitDate().toString());
             }
 
             // Tạo output stream và trả về file Excel dưới dạng byte[]

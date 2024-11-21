@@ -18,9 +18,16 @@ public class AuthenticationController {
 
     AuthenticationService authenticationService; //
 
-    @PostMapping("/token")
-    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationResquest request) {
-        var result = authenticationService.authenticate(request);
+    @PostMapping("/employee")
+    ApiResponse<AuthenticationResponse> authEmployee(@RequestBody AuthenticationResquest request) {
+        var result = authenticationService.auth_employee(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
+    }
+    @PostMapping("/user")
+    ApiResponse<AuthenticationResponse> authUser(@RequestBody AuthenticationResquest request) {
+        var result = authenticationService.auth_user(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
                 .build();
