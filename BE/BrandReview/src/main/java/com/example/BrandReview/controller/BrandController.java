@@ -74,7 +74,7 @@ public class BrandController {
 
             // Tạo dòng header
             Row headerRow = sheet.createRow(0);
-            String[] columnHeaders = {"ID", "Tên thương hiệu", "Số điện thoại", "Địa chỉ", "Google", "Facebook", "Ngày tạo"};
+            String[] columnHeaders = {"ID", "Tên thương hiệu","Dịch vụ", "Số điện thoại", "Địa chỉ", "Google", "Facebook", "Ngày tạo"};
             for (int i = 0; i < columnHeaders.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columnHeaders[i]);
@@ -86,11 +86,12 @@ public class BrandController {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(brand.getId());
                 row.createCell(1).setCellValue(brand.getName());
-                row.createCell(2).setCellValue(brand.getPhone());
-                row.createCell(3).setCellValue(brand.getLocation());
-                row.createCell(4).setCellValue(brand.getGoogle());
-                row.createCell(5).setCellValue(brand.getFacebook());
-                row.createCell(6).setCellValue(brand.getInitDate().toString());
+                row.createCell(2).setCellValue(brand.getBrandType().getName());
+                row.createCell(3).setCellValue(brand.getPhone());
+                row.createCell(4).setCellValue(brand.getLocation());
+                row.createCell(5).setCellValue(brand.getGoogle());
+                row.createCell(6).setCellValue(brand.getFacebook());
+                row.createCell(7).setCellValue(brand.getInitDate().toString());
             }
 
             // Tạo output stream và trả về file Excel dưới dạng byte[]

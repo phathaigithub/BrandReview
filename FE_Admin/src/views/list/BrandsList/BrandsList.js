@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import { Button,Select, MenuItem, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog'; 
 import ExportButtonBrands from './ExportButtonBrands.js';
 
@@ -40,6 +40,7 @@ const BrandsList = () => {
     },
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'name', headerName: 'Tên thương hiệu', width: 130 },
+    { field: 'brandType', headerName: 'Dịch vụ', width: 130 },
     { field: 'phone', headerName: 'Số điện thoại', width: 150 },
     { field: 'location', headerName: 'Địa chỉ', width: 80 },
     { field: 'google', headerName: 'Google URL', width: 80 },
@@ -54,6 +55,7 @@ const BrandsList = () => {
 
   const [formData, setFormData] = useState({
     name: '',
+    brandType: 1,
     phone: '',
     location: '',
     google: '',
@@ -63,6 +65,7 @@ const BrandsList = () => {
   const handleClickOpen = () => {
     setFormData({
       name: '',
+      brandType: 1,
       phone: '',
       location: '',
       google: '',
@@ -93,7 +96,7 @@ const BrandsList = () => {
         },
         body: JSON.stringify(formData),
       });
-
+      
       if (response.ok) {
         alert('Brand added successfully');
         handleClose();
@@ -115,7 +118,8 @@ const BrandsList = () => {
       if (response.ok) {
         const data = await response.json();
         const mappedData = data.map((brand) => ({
-          ...brand 
+          ...brand ,
+          brandType: brand.brandType.name
         }));
         setRows(mappedData);
       } else {
@@ -167,14 +171,12 @@ const handleDelete = async (brandId) => {
 //// EDITTTTT
 const handleEditClick = (brand) => {
   setFormData({
-    id: brand.id,
-    brandname: brand.brandname,
-    password: brand.password, // Leave blank if password shouldn't be shown
-    phone: brand.phone,
-    email: brand.email,
     name: brand.name,
-    birth: brand.birth,
-    gender: brand.gender,
+    brandType: brand.brandType, 
+    phone: brand.phone,
+    location: brand.location,
+    google: brand.google,
+    facebook: brand.facebook,
   });
   setOpenEdit(true);
 };
@@ -239,6 +241,21 @@ const handleSubmitEdit = async () => {
             value={formData.name}
             onChange={handleInputChange}
           />
+          <Select
+            margin="dense"
+            label="Loại cửa hàng"
+            fullWidth
+            name="brandType"
+            value={formData.brandType}
+            onChange={handleInputChange}
+            displayEmpty
+          >
+          <MenuItem value="" disabled>Chọn loại cửa hàng</MenuItem>
+          <MenuItem value={1}>Ăn uống</MenuItem>
+          <MenuItem value={2}>Giải trí</MenuItem>
+          <MenuItem value={3}>Du lịch</MenuItem>
+          <MenuItem value={4}>Mua sắm</MenuItem>
+    </Select>
           <TextField
             margin="dense"
             label="Số điện thoại"
