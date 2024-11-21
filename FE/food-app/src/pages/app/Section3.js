@@ -28,6 +28,7 @@ const Section3 = () => {
           facebook: brand.facebook,
           image: brand.image,
           slug: brand.slug,
+          reviews: brand.reviews,
           rating: brand.rating || 0,
           type: brand.brandType
         }));

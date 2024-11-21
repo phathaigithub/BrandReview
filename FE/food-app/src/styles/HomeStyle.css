@@ -712,15 +712,100 @@ footer .copy_right ul li:last-child:after {
     font-size: 0.9rem;
 }
 
+.brand_score_container {
+    display: inline-block;
+}
+
+.brand_score_container>h7 {
+    display: block;
+    margin-top: 5px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.brand_avg_score {
+    background-color: rgb(0, 165, 0);
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 1.75rem;
+    border-radius: 4px;
+    color: white;
+}
+
 .brand_score {
     background-color: rgba(236, 236, 236, 0.89);
     display: inline-block;
     padding: 2px 7px;
+    font-size: 1.2rem;
     border-radius: 4px;
 }
+
 .red {
     color: #e3000e;
 }
-.green{
+
+.green {
     color: rgb(0, 165, 0);
+}
+
+.user_avatar {
+    width: 40px;
+    /* Adjust size as needed */
+    height: 40px;
+    border-radius: 50%;
+    /* Makes it round */
+    overflow: hidden;
+    /* Ensures image fits within circle */
+    object-fit: cover;
+    /* Scales image to fit the avatar */
+    border: 2px solid #ddd;
+    /* Optional: border color and width */
+}
+
+.user_name {
+    display: flex;
+    flex-direction: column;
+}
+
+.review_date {
+    font-size: 0.75rem;
+}
+
+.ant-modal-content {
+    
+}
+
+.ant-image-preview-operations-operation-rotateLeft,
+.ant-image-preview-operations-operation-rotateRight,
+.ant-image-preview-operations-operation-flipY,
+.ant-image-preview-operations-operation-flipX {
+    display: none!important;
+}
+.ant-image{
+    width: 20%!important;
+    margin-bottom: 1rem;
+}
+.ant-image-mask{
+    margin: 0px 10px;
+}
+.grey_bar{
+    width: 100%;
+    background-color: rgb(211, 211, 211); /* Grey color */
+    height: 10px; /* Adjust the height of the bar as needed */
+    position: relative; /* To avoid being affected by parent padding */
+    left: 0; /* Align it to the left side */
+    right: 0; /* Align it to the right side */
+}
+.score_tag{
+    font-size: 0.75rem;
+}
+.review_score{
+    background-color: rgba(236, 236, 236, 0.89);
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+.card-img-top{
+    max-height: 132px;
 }

@@ -24,9 +24,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min = 4, message = "USER_INVALID")
-    private String username;
-
     @Size(min = 6, message = "PASSWORD_INVALID")
     private String password;
 
@@ -35,6 +32,7 @@ public class User {
     @Email(message = "EMAIL_INVALID")
     private String email;
 
+    private String avatar;
     private Boolean isEnable;
     private String name;
     private LocalDate birth;
@@ -42,11 +40,15 @@ public class User {
     @Column(name = "InitDate")
     private LocalDateTime InitDate = LocalDateTime.now();
 
-    public User(String username, String email, String password) {
-        this.username = username;
+    public User(String email, String password) {
         this.password = password;
         this.email = email;
     }
-
+    @PostLoad
+    public void setDefaultAvatarIfNull() {
+        if (this.avatar == null) {
+            this.avatar = "default.png";  // Set default value if still null after loading
+        }
+    }
 }
 

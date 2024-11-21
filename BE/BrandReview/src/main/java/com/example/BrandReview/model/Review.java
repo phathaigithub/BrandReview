@@ -11,7 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import java.util.List;
 
 @Entity
 //@Table(name = "Brand")
@@ -34,7 +34,10 @@ public class Review {
     @JsonIgnore
     private Brand brand;
 
-    private boolean isValid;
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImage> images;
+    private Integer status;
+
     private String content;
     private double SpaceScore;
     private double QualityScore;
@@ -47,9 +50,5 @@ public class Review {
     // private BrandType brandType;
     @Column(name = "InitDate")
     private LocalDateTime InitDate;
-
-
-
-
 }
 

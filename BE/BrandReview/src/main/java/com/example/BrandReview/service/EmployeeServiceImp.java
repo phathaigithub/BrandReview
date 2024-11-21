@@ -38,7 +38,12 @@ public class EmployeeServiceImp implements EmployeeService {
 
         employee.setPosition(defaultPosition);
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-
+        if (employeeRepository.existsByUsername(employee.getUsername())) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        if (employeeRepository.existsByEmail(employee.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
         // Save the employee
         return employeeRepository.save(employee);
     }

@@ -30,6 +30,9 @@ public class UserServiceImp implements UserService {
     @Override
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
         // Save the employee
         return userRepository.save(user);
     }
@@ -54,7 +57,6 @@ public class UserServiceImp implements UserService {
         User existingUser = userRepository.findById(userid)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
-        existingUser.setUsername(updateUser.getUsername());
         existingUser.setName(updateUser.getName());
         existingUser.setPhone(updateUser.getPhone());
         existingUser.setEmail(updateUser.getEmail());

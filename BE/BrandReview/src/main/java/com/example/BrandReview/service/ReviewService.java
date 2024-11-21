@@ -7,5 +7,5 @@ import java.util.List;
 public interface ReviewService{
     // public User saveUser(User user);
     // public List<User> getAllUsers();
-
+    public Review saveReview(Review review);
 }
