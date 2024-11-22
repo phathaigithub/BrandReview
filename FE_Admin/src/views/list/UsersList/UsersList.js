@@ -6,7 +6,16 @@ import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog';
 import ExportButtonUsers from './ExportButtonUsers.js';
 
 const UsersList = () => {
-  
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
   const columns = [
     {
       field: 'actions',
@@ -45,7 +54,15 @@ const UsersList = () => {
     { field: 'birth', headerName: 'Ngày sinh', width: 80 },
     { field: 'phone', headerName: 'Số điện thoại', width: 150 },
     { field: 'email', headerName: 'Email', width: 220 },
-    { field: 'initDate', headerName: 'Ngày tạo', width: 180 },
+    { 
+      field: 'initDate', 
+      headerName: 'Ngày tạo', 
+      width: 180,
+      valueFormatter: (params) => {
+        console.log('valueFormatter params:', params); // Debug log
+        return formatDate(params);
+      }
+    },
   ];
   const paginationModel = { page: 0, pageSize: 7 };
   const [rows, setRows] = useState([]);
