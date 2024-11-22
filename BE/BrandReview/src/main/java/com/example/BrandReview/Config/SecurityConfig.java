@@ -44,9 +44,9 @@ public class SecurityConfig {
                     return config;
                 }))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.PUT,"/employee/**","/user/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/employee/**","/user/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**","/user/**", "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/employee/**","/user/**", "/brand/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/employee/**","/user/**", "/brand/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**","/user/**","/user/get/**", "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );

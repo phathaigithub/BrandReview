@@ -11,7 +11,7 @@ import { CFormRange } from '@coreui/react';
 function BrandDetailReview({ review }) {
     console.log(review);
   
-    const avatar = require("../../assets/avatar/" + review.user.avatar)
+    const avatar = "http://localhost:8080/uploads/" + review.user.avatar;
     const formatDate = (timestamp) => {
         const date = new Date(timestamp);
         const day = String(date.getDate()).padStart(2, '0');
@@ -35,8 +35,8 @@ function BrandDetailReview({ review }) {
         return "http://localhost:8080/uploads/" + image.path;
     });
     return (
-        <div class="bg-white review mb-3">
-            <div class="p-3">
+        <div class="bg-white review mb-3 d-flex flex-column" style={{ minHeight: '250px' }}>
+            <div class="p-3 flex-grow-1">
                 <div className="review_header d-flex pb-2">
                     <img class="user_avatar" src={avatar}></img>
                     <div class="user_name">
@@ -68,9 +68,9 @@ function BrandDetailReview({ review }) {
                 </div>
                 <div class="review_body">
                     <p>{review.content}</p>
+                    <h6 class="border-top"></h6>
                     {images.length != 0 && (
                         <div>
-                            <h6 class=" border-top"></h6>
                             <div>
                                 <Row className="">
                                     <Image.PreviewGroup

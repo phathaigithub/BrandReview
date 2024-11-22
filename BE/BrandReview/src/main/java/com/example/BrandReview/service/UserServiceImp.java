@@ -48,8 +48,8 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public Optional<T> getUserById(int id) {
-        return Optional.empty();
+    public Optional<User> getUserById(int id) {
+        return userRepository.findById(id);
     }
 
     @Override

@@ -28,6 +28,7 @@ public class Brand {
     private String status;
     private int priority;
     private String phone;
+    @Column(length = 2048)
     private String google;
     private String location;
     private String facebook;

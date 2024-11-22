@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Snackbar, Alert } from '@mui/material';
 import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog'; 
 import ExportButtonBrands from './ExportButtonBrands.js';
 
@@ -60,6 +60,12 @@ const BrandsList = () => {
     facebook: ''
   });
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
   const handleClickOpen = () => {
     setFormData({
       name: '',
@@ -85,6 +91,7 @@ const BrandsList = () => {
   // Handle add brand
   const [brandAdded, setBrandAdded] = useState(false);
   const handleAddSubmit = async () => {
+    if (!validateForm()) return;
     try {
       const response = await fetch('http://localhost:8080/brand/add', {
         method: 'POST',
@@ -94,16 +101,18 @@ const BrandsList = () => {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        alert('Brand added successfully');
+        showNotification('Thêm cửa hàng thành công');
         handleClose();
         setBrandAdded(!brandAdded);
       } else {
-        alert('Failed to add brand');
+        showNotification(data.message || 'Thêm cửa hàng thất bại', 'error');
       }
     } catch (error) {
       console.error('Error adding brand:', error);
-      alert('Error occurred while adding brand');
+      showNotification('Đã xảy ra lỗi khi thêm cửa hàng', 'error');
     }
   };
  // END ADD brand
@@ -144,22 +153,21 @@ const handleCloseDialog = () => {
   setOpenDialog(false);
   setBrandToDelete(null);
 };
-const handleDelete = async (brandId) => {
-
+const handleDelete = async () => {
   try {
     const response = await fetch(`http://localhost:8080/brand/delete/${brandToDelete}`, {
       method: 'DELETE',
     });
 
     if (response.ok) {
-      // Update the state to remove the deleted brand
       setRows((prevRows) => prevRows.filter((row) => row.id !== brandToDelete));
+      showNotification('Xóa cửa hàng thành công');
     } else {
-      alert('Failed to delete brand');
+      showNotification('Xóa cửa hàng thất bại', 'error');
     }
   } catch (error) {
     console.error('Error deleting brand:', error);
-    alert('Error occurred while deleting brand');
+    showNotification('Đã xảy ra lỗi khi xóa cửa hàng', 'error');
   }
   handleCloseDialog();
 };
@@ -168,41 +176,80 @@ const handleDelete = async (brandId) => {
 const handleEditClick = (brand) => {
   setFormData({
     id: brand.id,
-    brandname: brand.brandname,
-    password: brand.password, // Leave blank if password shouldn't be shown
-    phone: brand.phone,
-    email: brand.email,
     name: brand.name,
-    birth: brand.birth,
-    gender: brand.gender,
+    phone: brand.phone,
+    location: brand.location,
+    google: brand.google,
+    facebook: brand.facebook
   });
   setOpenEdit(true);
 };
 
 const handleSubmitEdit = async () => {
+  if (!validateForm()) return;
   try {
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      showNotification('Vui lòng đăng nhập để thực hiện chức năng này', 'error');
+      return;
+    }
+
     const response = await fetch(`http://localhost:8080/brand/edit/${formData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        name: formData.name,
+        phone: formData.phone,
+        location: formData.location,
+        google: formData.google,
+        facebook: formData.facebook
+      }),
     });
 
     if (response.ok) {
-      alert('Brand updated successfully');
-      handleClose();
-      setBrandAdded(!brandAdded);
+      showNotification('Cập nhật thông tin thành công');
       setOpenEdit(false);
+      setBrandAdded(!brandAdded);
+    } else if (response.status === 401) {
+      showNotification('ERROR AUTHORIZATION', 'error');
+      // Optionally redirect to login page
     } else {
-      alert('Failed to update brand');
+      const errorData = await response.text();
+      showNotification(errorData || 'Cập nhật thông tin thất bại', 'error');
     }
   } catch (error) {
     console.error('Error updating brand:', error);
-    alert('Error occurred while updating brand');
+    showNotification('Đã xảy ra lỗi khi cập nhật thông tin', 'error');
   }
 };
 // END EDITT
+
+  const showNotification = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
+
+  const validateForm = () => {
+    if (!formData.name || !formData.phone || !formData.location) {
+      showNotification('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
+      return false;
+    }
+    return true;
+  };
 
   return (
     <>
@@ -345,6 +392,21 @@ const handleSubmitEdit = async () => {
         onClose={handleCloseDialog}
         onConfirm={handleDelete}
       />
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
 );
 };

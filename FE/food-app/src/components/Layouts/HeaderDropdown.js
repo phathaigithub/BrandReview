@@ -9,7 +9,7 @@ const HeaderDropDown = ({ avatar, name }) => {
         {
             key: '1',
             label: (
-                <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+                <a href="/information">
                     Thông tin cá nhân
                 </a>
             ),

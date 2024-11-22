@@ -35,7 +35,7 @@ function UserRegister() {
             setErrorMessage("Vui lòng điền đầy đủ thông tin để đăng ký.");
             return;
         }
-        const regex = /^[a-zA-Z\s]+$/;
+        const regex = /^[\p{L}\s]+$/u;
         if (!regex.test(name)) {
             setErrorMessage("Họ và tên không hợp lệ");
             return;

@@ -40,11 +40,16 @@ public class BrandServiceImp implements BrandService {
     }
 
     @Override
-    public Brand updateBrand(int id, Brand brandId) {
+    public Brand updateBrand(int id, Brand updatedBrand) {
         Brand existingBrand = brandRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_FOUND));
 
-//        existingBrand.setUsername(updatedEmployee.getUsername());
+        // Update the fields with new values
+        existingBrand.setName(updatedBrand.getName());
+        existingBrand.setPhone(updatedBrand.getPhone());
+        existingBrand.setLocation(updatedBrand.getLocation());
+        existingBrand.setGoogle(updatedBrand.getGoogle());
+        existingBrand.setFacebook(updatedBrand.getFacebook());
 
         return brandRepository.save(existingBrand);
     }

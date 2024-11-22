@@ -5,7 +5,7 @@ import Layout from "../../components/Layouts/Layout";
 import "../../styles/HomeStyle.css";
 import "../../styles/Custom.css";
 import Section7 from "./Section7";
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import BrandDetailReview from "./BrandDetailReview";
 import { Modal, Button as AntButton, Image } from 'antd';
@@ -21,10 +21,10 @@ const BrandDetail = () => {
     const [isLoading, setIsLoading] = useState(true); // Track loading state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
-    const reviewRef = useRef(null); 
-    const googleMapRef = useRef(null); 
-    const scrollToSection = (sectionRef) => { 
-        sectionRef.current.scrollIntoView({ behavior: 'smooth' }); 
+    const reviewRef = useRef(null);
+    const googleMapRef = useRef(null);
+    const scrollToSection = (sectionRef) => {
+        sectionRef.current.scrollIntoView({ behavior: 'smooth' });
     };
     const isLoggedIn = () => {
         // Replace this with your actual authentication check
@@ -112,15 +112,47 @@ const BrandDetail = () => {
             return input.toFixed(0);
         return input.toFixed(1);
     }
-    const avatar = require("../../assets/avatar/default.png");
-    const images = [
-        avatar,
-        avatar,
-        avatar,
-        avatar,
-        avatar,
-        imageSrc
-    ];
+    const formatGoogleMapUrl = (url) => {
+        if (!url) return '';
+        
+        // Check if it's already an embed URL
+        if (url.includes('embed')) {
+            return url;
+        }
+
+        // Convert regular Google Maps URL to embed URL
+        try {
+            // Extract coordinates and location name
+            if (url.includes('@')) {
+                const coords = url.split('@')[1].split(',');
+                const lat = coords[0];
+                const lng = coords[1];
+                // Create a more precise embed URL with zoom level 15
+                return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1sen!2s!4v1`;
+            } 
+            // For search URLs, create a place-based embed
+            else if (url.includes('maps/search')) {
+                const searchQuery = url.split('maps/search/')[1].split('/@')[0];
+                const coords = url.split('@')[1].split(',');
+                const lat = coords[0];
+                const lng = coords[1];
+                return `https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${searchQuery}&center=${lat},${lng}&zoom=15`;
+            }
+            // For direct place URLs
+            else if (url.includes('maps/place')) {
+                return url.replace('maps/place', 'maps/embed/place');
+            }
+            // For other map URLs
+            else if (url.includes('maps/')) {
+                return url.replace('maps/', 'maps/embed/');
+            }
+        } catch (error) {
+            console.error('Error formatting Google Maps URL:', error);
+            return '';
+        }
+        
+        return url;
+    };
     return (
         <Layout>
             <section className="brand_section">
@@ -167,61 +199,69 @@ const BrandDetail = () => {
                         </Col>
                     </Row>
                     <Row className="mt-3" style={{ minHeight: '800px' }}>
-                        <Col className=" offset-1 col-2">
-                            <Row className="bg-white border">
-                                <ul className="nav flex-column bg-white border-top pe-0">
-                                    <li className="nav-item">
-                                        <a
-                                            href="javascript:void(0);"
-                                            className={`sidebar nav-link active`}
-                                        >
-                                            Đánh giá
-                                            <i className={`bi bi-chevron-down`}></i>
-                                        </a>
-                                    </li>
-                                    <li className="nav-item border-top ">
-                                        <a className={`sidebar nav-link`}>
-                                            Bản đồ
-                                            <i className={`bi bi-chevron-right`}></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </Row>
-                            <Row className="mt-3 d-flex flex-column">
-                                <AntButton type="primary" onClick={showModal}
-                                    style={{
-                                        backgroundColor: "#0958d9",
-                                        color: "#fff",
-                                        fontWeight: "500"
-                                    }}>
-                                    Đánh giá
-                                </AntButton>
-                                <Modal title="Đánh giá thương hiệu" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
-                                    footer={null}>
-                                    <ReviewForm tokenData={tokenData} brandID={brandID}></ReviewForm>
-                                </Modal>
-                            </Row>
+                        <Col className="offset-1 col-2">
+                            <div class="" style={{ position: 'sticky', top: '20px' }}>
+                                <Row className="bg-white border">
+                                    <ul className="nav flex-column bg-white border-top pe-0">
+                                        <li className="nav-item">
+                                            <a
+                                                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: "5px" }}
+                                                href="javascript:void(0);"
+                                                className={`sidebar nav-link`}
+                                                onClick={() => scrollToSection(reviewRef)}
+                                            >
+                                                Đánh giá
+                                                <i className={`bi bi-chevron-right`}></i>
+                                            </a>
+                                        </li>
+                                        <li className="nav-item border-top ">
+                                            <a className="sidebar nav-link" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: "5px" }}
+                                                onClick={() => scrollToSection(googleMapRef)}
+                                            >
+                                                Bản đồ
+                                                <i className={`bi bi-chevron-right`}></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </Row>
+                                <Row className="mt-3 d-flex flex-column">
+                                    <AntButton type="primary" onClick={showModal}
+                                        style={{
+                                            backgroundColor: "#0958d9",
+                                            color: "#fff",
+                                            fontWeight: "500"
+                                        }}>
+                                        Đánh giá
+                                    </AntButton>
+                                    <Modal title="Đánh giá thương hiệu" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
+                                        footer={null}>
+                                        <ReviewForm tokenData={tokenData} brandID={brandID}></ReviewForm>
+                                    </Modal>
+                                </Row>
+                            </div>
                         </Col>
                         <Col className="col-8">
-                            <Row id="review">
+                            <Row id="review" ref={reviewRef}>
                                 <Col className="col-12">
                                     {brand.reviews.map((review, index) => (
                                         <BrandDetailReview review={review} />
                                     ))}
                                 </Col>
                             </Row>
-                            <Row id="google">
-                                <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3919.042407802272!2d106.618481!3d10.808064!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752b2f1b89cebb%3A0xd5b7573bfa9a3d32!2zQsOhbmggbcOsIE3hu5lj!5e0!3m2!1sen!2sus!4v1732200373177!5m2!1sen!2sus"
-                                    style={{
-                                        width: "100%",
-                                        height: "600px",
-                                        border: "0"
-                                    }}
-                                    allowFullScreen=""
-                                    loading="lazy"
-                                    referrerPolicy="no-referrer-when-downgrade">
-                                </iframe>
+                            <Row id="google" ref={googleMapRef}>
+                                {brand.google && (
+                                    <iframe
+                                        src={formatGoogleMapUrl(brand.google)}
+                                        style={{
+                                            width: "100%",
+                                            height: "600px",
+                                        }}
+                                        className="border-0"
+                                        allowFullScreen=""
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer-when-downgrade">
+                                    </iframe>
+                                )}
                             </Row>
 
                         </Col>
