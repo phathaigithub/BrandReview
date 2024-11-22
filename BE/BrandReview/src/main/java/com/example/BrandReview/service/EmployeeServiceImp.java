@@ -33,18 +33,27 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public Employee saveEmployee(Employee employee) {
-        Position defaultPosition = positionRepository.findById(3)
-                .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND)); // Ensure the default position exists
+        // Chỉ set position mặc định nếu không có position được truyền vào
+        if (employee.getPosition() == null) {
+            Position defaultPosition = positionRepository.findById(3)
+                    .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+            employee.setPosition(defaultPosition);
+        } else {
+            // Nếu có position, kiểm tra position có tồn tại trong DB không
+            Position position = positionRepository.findById(employee.getPosition().getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+            employee.setPosition(position);
+        }
 
-        employee.setPosition(defaultPosition);
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+        
         if (employeeRepository.existsByUsername(employee.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         if (employeeRepository.existsByEmail(employee.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
-        // Save the employee
+        
         return employeeRepository.save(employee);
     }
 

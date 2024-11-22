@@ -15,7 +15,6 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
-import axios from 'axios';
 
 const Login = () => {
     const [username, setUsername] = useState('');
