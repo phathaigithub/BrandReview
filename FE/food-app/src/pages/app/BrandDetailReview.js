@@ -5,8 +5,9 @@ import { Row, Col } from "react-bootstrap";
 import "../../styles/HomeStyle.css";
 import "../../styles/Custom.css";
 import React, { useEffect, useState } from 'react';
-import { Image } from 'antd';
+import { Image, Modal } from 'antd';
 import { CFormRange } from '@coreui/react';
+import { jwtDecode } from 'jwt-decode';
 
 function BrandDetailReview({ review }) {
     console.log(review);
@@ -34,6 +35,41 @@ function BrandDetailReview({ review }) {
         // Assuming `image.path` is something like '/uploads/dc1f0ce6-0482-4331-a211-5d2e10cf3d60_1732191208419.jpg'
         return "http://localhost:8080/uploads/" + image.path;
     });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleReport = async () => {
+        // Get token and check user ID
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            if (decodedToken.id === review.user.id) {
+                Modal.error({
+                    content: 'Không thể tự báo cáo đánh giá của bạn!'
+                });
+                setIsModalOpen(false);
+                return;
+            }
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/review/report/${review.id}`, {
+                method: 'PUT',
+            });
+            if (response.ok) {
+                Modal.success({
+                    content: 'Báo cáo đã được gửi thành công',
+                });
+            }
+        } catch (error) {
+            console.error('Error reporting review:', error);
+            Modal.error({
+                content: 'Có lỗi xảy ra khi gửi báo cáo',
+            });
+        }
+        setIsModalOpen(false);
+    };
+
     return (
         <div class="bg-white review mb-3 d-flex flex-column" style={{ minHeight: '250px' }}>
             <div class="p-3 flex-grow-1">
@@ -64,6 +100,13 @@ function BrandDetailReview({ review }) {
                             <div className={`fw-bold review_score ${review.spaceScore <= 5 ? "red" : "green"} mb-0`}>{ScoreToText(review.spaceScore)}</div>
                             <h7 class="score_tag">Space</h7>
                         </div>
+                        <div className="ms-4 position-relative" style={{ top: '-10px' }}>
+                            <i 
+                                className="bi bi-flag-fill text-danger" 
+                                style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                                onClick={() => setIsModalOpen(true)}
+                            ></i>
+                        </div>
                     </Col>
                 </div>
                 <div class="review_body">
@@ -91,6 +134,20 @@ function BrandDetailReview({ review }) {
             <div className="grey_bar">
 
             </div>
+
+            <Modal
+                title="Xác nhận báo cáo"
+                open={isModalOpen}
+                onOk={handleReport}
+                onCancel={() => setIsModalOpen(false)}
+                okText="Xác nhận"
+                cancelText="Hủy"
+                okButtonProps={{ 
+                    style: { backgroundColor: '#dc3545', borderColor: '#dc3545' } 
+                }}
+            >
+                <p>Bạn có chắc chắn muốn báo cáo đánh giá này?</p>
+            </Modal>
         </div>
     );
 };

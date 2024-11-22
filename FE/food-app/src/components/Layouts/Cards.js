@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 
 function Cards({ id, name, image, status, priority, phone, google, location, facebookk, slug, rating, type, reviews, renderRatingIcons }) {
     console.log("Props:", { id, name, image, status, priority, phone, google, location, facebookk, slug, type, rating, reviews });
-    const imageSrc = require("../../assets/" + image); // assuming the `brand.image` has only the filename
+    const imageSrc = image 
+        ? "http://localhost:8080/uploads/" + image 
+        : "http://localhost:8080/uploads/branddefault.jpg";
     const calc_avg_score = (reviews) => {
         if (!reviews || reviews.length === 0) {
           return 0; 
@@ -39,7 +41,7 @@ function Cards({ id, name, image, status, priority, phone, google, location, fac
                         </div>
                     </div>
                     <Card.Title>{name}</Card.Title>
-                    <Card.Text className="hidden-two-line">{location}</Card.Text>
+                    <Card.Text className="hidden-two-line" style={{ minHeight: '48px' }}>{location}</Card.Text>
 
                     <div className="d-flex align-items-center justify-content-between">
 

@@ -57,6 +57,8 @@ const UsersersList = React.lazy(() => import("./views/list/UsersList/UsersList")
 const EmployeesList = React.lazy(() => import("./views/list/EmployeesList/EmployeesList"))
 const BrandsList = React.lazy(() => import("./views/list/BrandsList/BrandsList"))
 const ContactList = React.lazy(() => import("./views/list/ContactList/ContactList"))
+const ReviewList = React.lazy(() => import("./views/list/ReviewList/ReviewList"))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -67,6 +69,7 @@ const routes = [
   { path: '/list/employeeslist', name: 'Nhân viên', element: EmployeesList },
   { path: '/list/brandslist', name: 'Cửa hàng', element: BrandsList },
   { path: '/list/contactlist', name: 'Yêu cầu khách hàng', element: ContactList },
+  { path: '/list/reviewlist', name: 'Xử lý báo cáo đánh giá', element: ReviewList },
 
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },

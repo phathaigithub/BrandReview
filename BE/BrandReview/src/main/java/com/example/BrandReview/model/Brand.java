@@ -25,7 +25,7 @@ public class Brand {
     private Integer id;
 
     private String name;
-    private String status;
+    private int status;
     private int priority;
     private String phone;
     @Column(length = 2048)
@@ -41,9 +41,7 @@ public class Brand {
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
-
-    @Column(name = "InitDate")
-    private LocalDateTime InitDate;
+    private LocalDateTime initDate;
 
 
 

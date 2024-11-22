@@ -19,7 +19,8 @@ public enum ErrorCode {
     EMPLOYEE_NOT_FOUND(1008,"Không tìm thấy nhân viên"),
     USER_NOT_FOUND(1009,"Không tìm thấy người dùng"),
     BRAND_NOT_FOUND(1010, "Không tìm thấy thương hiệu"),
-    ALREADY_REVIEW(1011, "Chỉ có thể đánh giá thương hiệu 1 lần")
+    ALREADY_REVIEW(1011, "Chỉ có thể đánh giá thương hiệu 1 lần"),
+    BRANDNAME_EXISTED(1012, "Tên thương hiệu đã tồn tại")
     ;
     private int code;
     private String message;

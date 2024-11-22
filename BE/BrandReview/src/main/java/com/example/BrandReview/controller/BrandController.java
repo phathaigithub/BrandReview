@@ -1,9 +1,14 @@
 package com.example.BrandReview.controller;
 
 import com.example.BrandReview.dto.response.ApiResponse;
+import com.example.BrandReview.exception.AppException;
+import com.example.BrandReview.exception.ErrorCode;
 import com.example.BrandReview.model.Brand;
+import com.example.BrandReview.model.BrandType;
 import com.example.BrandReview.model.User;
 import com.example.BrandReview.service.BrandService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,10 +20,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/brand")
@@ -40,10 +51,63 @@ public class BrandController {
     }
 
     @PostMapping("/add")
-    public ApiResponse<Brand> add(@RequestBody @Valid Brand brand) {
+    public ApiResponse<Brand> add(
+            @RequestParam("name") String name,
+            @RequestParam("phone") String phone,
+            @RequestParam("location") String location,
+            @RequestParam("google") String google,
+            @RequestParam("facebook") String facebook,
+            @RequestParam("brandType") String brandTypeJson,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+        
         ApiResponse<Brand> response = new ApiResponse<>();
-        response.setResult(brandService.saveBrand(brand)); // Trả về json trạng thái của request
-        return response;
+        
+        try {
+            Brand brand = new Brand();
+            brand.setName(name);
+            brand.setPhone(phone);
+            brand.setLocation(location);
+            brand.setGoogle(google);
+            brand.setFacebook(facebook);
+            
+            // Parse brandType from JSON string
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode brandTypeNode = mapper.readTree(brandTypeJson);
+            BrandType brandType = new BrandType();
+            brandType.setId(brandTypeNode.get("id").asInt());
+            brandType.setName(brandTypeNode.get("name").asText());
+            brand.setBrandType(brandType);
+
+            // Handle image upload
+            String imagePath;
+            if (image == null || image.isEmpty()) {
+                imagePath = "branddefault.jpg"; // Default image for brands
+            } else {
+                String uniqueName = UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
+                String originalFilename = image.getOriginalFilename();
+                String extension = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+                imagePath = uniqueName + extension;
+                
+                // Save image to the same folder as user images
+                Path filePath = Paths.get("src/main/resources/static/uploads/" + imagePath);
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, image.getBytes());
+            }
+            
+            brand.setImage(imagePath);
+            Brand savedBrand = brandService.saveBrand(brand);
+            
+            response.setCode(200);
+            response.setMessage("Brand created successfully");
+            response.setResult(savedBrand);
+            return response;
+            
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
@@ -57,12 +121,57 @@ public class BrandController {
     }
 
     @PutMapping("/edit/{id}")
-    public ApiResponse<Brand> edit(@PathVariable("id") int brandId, @RequestBody @Valid Brand updatedBrand) {
+    public ApiResponse<Brand> edit(
+            @PathVariable("id") int brandId,
+            @RequestParam("name") String name,
+            @RequestParam("phone") String phone,
+            @RequestParam("location") String location,
+            @RequestParam("google") String google,
+            @RequestParam("facebook") String facebook,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+        
         ApiResponse<Brand> response = new ApiResponse<>();
+        
+        try {
+            Brand updatedBrand = new Brand();
+            updatedBrand.setName(name);
+            updatedBrand.setPhone(phone);
+            updatedBrand.setLocation(location);
+            updatedBrand.setGoogle(google);
+            updatedBrand.setFacebook(facebook);
 
-        Brand updated = brandService.updateBrand(brandId, updatedBrand);
-        response.setResult(updated);
+            // Handle image upload if provided
+            if (image != null && !image.isEmpty()) {
+                String uniqueName = UUID.randomUUID().toString() + "_" + 
+                    System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                
+                Path uploadPath = Paths.get("src/main/resources/static/uploads");
+                Files.createDirectories(uploadPath);
+                
+                // Delete old image if exists
+                Brand existingBrand = brandService.getBrandById(brandId);
+                if (existingBrand != null && existingBrand.getImage() != null 
+                    && !existingBrand.getImage().equals("branddefault.jpg")) {
+                    Path oldImagePath = uploadPath.resolve(existingBrand.getImage());
+                    Files.deleteIfExists(oldImagePath);
+                }
+                
+                // Save new image
+                Files.copy(image.getInputStream(), 
+                          uploadPath.resolve(uniqueName), 
+                          StandardCopyOption.REPLACE_EXISTING);
+                updatedBrand.setImage(uniqueName);
+            }
 
+            Brand updated = brandService.updateBrand(brandId, updatedBrand);
+            response.setCode(200);
+            response.setMessage("Brand updated successfully");
+            response.setResult(updated);
+            
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+        
         return response;
     }
 

@@ -17,15 +17,29 @@ const UsersList = () => {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
   const columns = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'name', headerName: 'Tên người dùng', width: 150 },
+    { field: 'gender', headerName: 'Giới tính', width: 80 },
+    { field: 'birth', headerName: 'Ngày sinh', width: 80 },
+    { field: 'phone', headerName: 'Số điện thoại', width: 150 },
+    { field: 'email', headerName: 'Email', width: 220 },
+    { 
+      field: 'initDate', 
+      headerName: 'Ngày tạo', 
+      width: 180,
+      valueFormatter: (params) => formatDate(params)
+    },
     {
       field: 'actions',
       headerName: '',
       width: 120,
       sortable: false,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <button
           type="button"
-          className="btn btn-warning text-white"
+          className="btn btn-primary text-white"
           onClick={() => handleEditClick(params.row)}
         >
           Chỉnh sửa
@@ -37,6 +51,8 @@ const UsersList = () => {
       headerName: '',
       width: 110,
       sortable: false,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <button
           type="button"
@@ -46,22 +62,6 @@ const UsersList = () => {
           Xoá
         </button>
       ),
-    },
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'username', headerName: 'Tên đăng nhập', width: 130 },
-    { field: 'name', headerName: 'Tên người dùng', width: 150 },
-    { field: 'gender', headerName: 'Giới tính', width: 80 },
-    { field: 'birth', headerName: 'Ngày sinh', width: 80 },
-    { field: 'phone', headerName: 'Số điện thoại', width: 150 },
-    { field: 'email', headerName: 'Email', width: 220 },
-    { 
-      field: 'initDate', 
-      headerName: 'Ngày tạo', 
-      width: 180,
-      valueFormatter: (params) => {
-        console.log('valueFormatter params:', params); // Debug log
-        return formatDate(params);
-      }
     },
   ];
   const paginationModel = { page: 0, pageSize: 7 };

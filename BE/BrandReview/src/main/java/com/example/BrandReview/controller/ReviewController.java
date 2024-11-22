@@ -10,8 +10,10 @@ import com.example.BrandReview.responsitory.BrandRepository;
 import com.example.BrandReview.responsitory.ReviewRepository;
 import com.example.BrandReview.responsitory.UserRepository;
 import com.example.BrandReview.service.ReviewService;
+import com.example.BrandReview.dto.ReviewDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/review")
@@ -54,7 +57,7 @@ public class ReviewController {
             @RequestParam(value = "images", required = false) List<MultipartFile> images
     ) {
         try{
-        if (reviewRepository.existsByUserId(userID))
+        if (reviewRepository.existsByUserIdAndBrandId(userID, brandID))
             throw new AppException(ErrorCode.ALREADY_REVIEW);
         User user = userRepository.findById(userID)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -65,6 +68,7 @@ public class ReviewController {
         review.setContent(content);
         review.setQualityScore(quality);
         review.setPriceScore(price);
+        review.setStatus(0);
         review.setServiceScore(service);
         review.setLocationScore(location);
         review.setSpaceScore(space);
@@ -112,6 +116,51 @@ public class ReviewController {
         } catch (IOException e) {
             e.printStackTrace(); // Log the error (or replace with a proper logging framework)
             throw new RuntimeException("Failed to save image: " + e.getMessage(), e);
+        }
+    }
+
+    @PutMapping("/report/{id}")
+    public ApiResponse<Review> reportReview(@PathVariable Integer id) {
+        try {
+            Review review = reviewRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Review not found"));
+            review.setStatus(1);
+            reviewRepository.save(review);
+            
+            ApiResponse<Review> response = new ApiResponse<>();
+            response.setCode(200);
+            response.setResult(review);
+            return response;
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+    }
+
+    @GetMapping("/getAllReviews")
+    public List<ReviewDTO> getAllReviews() {
+        List<Review> reviews = reviewRepository.findAll();
+        return reviews.stream()
+            .map(review -> new ReviewDTO(
+                review.getId(),
+                review.getUser().getName(),
+                review.getBrand().getName(),
+                review.getContent(),
+                review.getInitDate(),
+                review.getStatus(),
+                review.getBrand().getId()
+            ))
+            .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteReview(@PathVariable Integer id) {
+        try {
+            Review review = reviewRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Review not found"));
+            reviewRepository.delete(review);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

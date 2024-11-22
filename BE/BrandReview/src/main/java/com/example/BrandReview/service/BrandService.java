@@ -12,4 +12,5 @@ public interface BrandService{
     public Brand saveBrand(Brand brand);
     void deleteBrand(int brandId);
     public Brand updateBrand(int id, Brand brandId);
+    public Brand getBrandById(int id);
 }

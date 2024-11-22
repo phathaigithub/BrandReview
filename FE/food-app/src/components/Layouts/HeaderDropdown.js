@@ -25,7 +25,7 @@ const HeaderDropDown = ({ avatar, name }) => {
         localStorage.removeItem('authToken');
         history.push("/"); // You can also use a routing library like react-router
     };
-    const avatarPath = require(`../../assets/avatar/${avatar}`);
+    const avatarPath = "http://localhost:8080/uploads/" + avatar;
     return (
         <a href="javascript:void(0);">
             <Dropdown
@@ -38,7 +38,6 @@ const HeaderDropDown = ({ avatar, name }) => {
             >
                 <a onClick={(e) => e.preventDefault()}>
                     <Space>
-                        {/* Dynamically set the avatar source */}
                         <h5 class="pt-2">{name}</h5>
                         <Avatar src={avatarPath} className='me-1' />
                     </Space>

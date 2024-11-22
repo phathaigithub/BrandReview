@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from "../../components/Layouts/Layout";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Section2 from "./Section2";
 import ProfileTab from "./ProfileTab";
+import { useHistory } from 'react-router-dom';
 
 const Information = () => {
+  const history = useHistory();
   const [activeTab, setActiveTab] = useState('Profile');
+
+  useEffect(() => {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      history.push('/');
+    }
+  }, [history]);
 
   const changeTab = (tab) => {
     setActiveTab(tab);

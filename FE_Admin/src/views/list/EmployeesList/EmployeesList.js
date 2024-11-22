@@ -17,36 +17,6 @@ const EmployeesList = () => {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
   const columns = [
-    {
-      field: 'actions',
-      headerName: '',
-      width: 120,
-      sortable: false,
-      renderCell: (params) => (
-        <button
-          type="button"
-          className="btn btn-warning text-white"
-          onClick={() => handleEditClick(params.row)}
-        >
-          Chỉnh sửa
-        </button>
-      ),
-    },
-    {
-      field: 'actions2',
-      headerName: '',
-      width: 110,
-      sortable: false,
-      renderCell: (params) => (
-        <button
-          type="button"
-          className="btn btn-danger text-white"
-          onClick={() => handleDeleteClick(params.row.id)}
-        >
-          Xoá
-        </button>
-      ),
-    },
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'username', headerName: 'Tên đăng nhập', width: 130 },
     { field: 'name', headerName: 'Tên nhân viên', width: 150 },
@@ -59,10 +29,41 @@ const EmployeesList = () => {
       field: 'initDate', 
       headerName: 'Ngày tạo', 
       width: 180,
-      valueFormatter: (params) => {
-        console.log('valueFormatter params:', params); // Debug log
-        return formatDate(params);
-      }
+      valueFormatter: (params) => formatDate(params)
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      width: 120,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <button
+          type="button"
+          className="btn btn-primary text-white"
+          onClick={() => handleEditClick(params.row)}
+        >
+          Chỉnh sửa
+        </button>
+      ),
+    },
+    {
+      field: 'actions2',
+      headerName: '',
+      width: 110,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <button
+          type="button"
+          className="btn btn-danger text-white"
+          onClick={() => handleDeleteClick(params.row.id)}
+        >
+          Xoá
+        </button>
+      ),
     },
   ];
   const paginationModel = { page: 0, pageSize: 7 };

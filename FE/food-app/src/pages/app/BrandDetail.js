@@ -41,26 +41,34 @@ const BrandDetail = () => {
     };
     const handleOk = () => {
         setIsModalOpen(false);
+        refreshBrandData(); // Refresh the brand data
     };
     const handleCancel = () => {
         setIsModalOpen(false);
+        refreshBrandData(); // Refresh the brand data
     };
     useEffect(() => {
         // Fetch brand data based on the slug
         fetch(`http://localhost:8080/brand/slug/${slug}`)
-            .then(response => response.json())
-            .then(data => {
-                if (Object.keys(data).length === 0) {
-                    // If data is empty, redirect to 404
-                    history.replace('/404');
-                } else {
-                    setBrand(data.result);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Brand not found');
                 }
+                return response.json();
+            })
+            .then(data => {
+                if (!data || !data.result || Object.keys(data.result).length === 0) {
+                    // Redirect to 404 if no data or empty result
+                    history.replace('/404');
+                    return;
+                }
+                setBrand(data.result);
                 setIsLoading(false);
             })
             .catch(error => {
                 console.error("Error fetching brand data:", error);
-                history.replace('/404'); // Redirect to 404 on fetch error
+                history.replace('/404'); // Redirect to 404 on any error
+                setIsLoading(false);
             });
     }, [slug, history]);
     if (isLoading) {
@@ -77,7 +85,11 @@ const BrandDetail = () => {
     }
     let brandID = brand.id;
     console.log(brand);
-    const imageSrc = brand ? require("../../assets/" + brand.image) : null // assuming the `brand.image` has only the filename
+    const imageSrc = brand ? 
+        brand.image ? 
+            "http://localhost:8080/uploads/" + brand.image 
+            : "http://localhost:8080/uploads/branddefault.jpg"
+        : null;
     const calcAvgScores = (reviews) => {
         if (!reviews.length) return { location: 0, quality: 0, service: 0, space: 0, price: 0 };
 
@@ -153,6 +165,26 @@ const BrandDetail = () => {
         
         return url;
     };
+    const refreshBrandData = () => {
+        fetch(`http://localhost:8080/brand/slug/${slug}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Brand not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data || !data.result || Object.keys(data.result).length === 0) {
+                    history.replace('/404');
+                    return;
+                }
+                setBrand(data.result);
+            })
+            .catch(error => {
+                console.error("Error fetching brand data:", error);
+            });
+    };
+    
     return (
         <Layout>
             <section className="brand_section">
@@ -235,7 +267,7 @@ const BrandDetail = () => {
                                     </AntButton>
                                     <Modal title="Đánh giá thương hiệu" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
                                         footer={null}>
-                                        <ReviewForm tokenData={tokenData} brandID={brandID}></ReviewForm>
+                                        <ReviewForm tokenData={tokenData} brandID={brandID} onSubmitSuccess={handleOk}></ReviewForm>
                                     </Modal>
                                 </Row>
                             </div>
@@ -243,27 +275,37 @@ const BrandDetail = () => {
                         <Col className="col-8">
                             <Row id="review" ref={reviewRef}>
                                 <Col className="col-12">
-                                    {brand.reviews.map((review, index) => (
-                                        <BrandDetailReview review={review} />
-                                    ))}
+                                    {brand.reviews && brand.reviews.length > 0 ? (
+                                        brand.reviews.map((review, index) => (
+                                            <BrandDetailReview review={review} />
+                                        ))
+                                    ) : (
+                                        <div className="text-center p-4 border-bottom">
+                                            <p className="mb-0">No reviews available yet</p>
+                                        </div>
+                                    )}
                                 </Col>
                             </Row>
-                            <Row id="google" ref={googleMapRef}>
-                                {brand.google && (
+                            <Row id="google" ref={googleMapRef} className="mt-4">
+                                {brand.google && brand.google !== "google.com" ? (
                                     <iframe
                                         src={formatGoogleMapUrl(brand.google)}
                                         style={{
                                             width: "100%",
                                             height: "600px",
+                                            border: "1px solid #dee2e6",
+                                            borderRadius: "4px"
                                         }}
-                                        className="border-0"
                                         allowFullScreen=""
                                         loading="lazy"
                                         referrerPolicy="no-referrer-when-downgrade">
                                     </iframe>
+                                ) : (
+                                    <div className="text-center p-4" style={{ borderRadius: '4px' }}>
+                                        <p className="mb-0">No map location available</p>
+                                    </div>
                                 )}
                             </Row>
-
                         </Col>
                     </Row>
                 </Container>

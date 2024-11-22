@@ -6,17 +6,37 @@ import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog';
 import ExportButtonBrands from './ExportButtonBrands.js';
 
 const BrandsList = () => {
-  
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
+
   const columns = [
+    { field: 'id', headerName: 'ID', width: 30 },
+    { field: 'name', headerName: 'Tên thương hiệu', width: 130 },
+    { field: 'brandType', headerName: 'Dịch vụ', width: 80 },
+    { field: 'phone', headerName: 'Số điện thoại', width: 110 },
+    { field: 'location', headerName: 'Địa chỉ', width: 200 },
+    { field: 'google', headerName: 'Google URL', width: 150 },
+    { field: 'facebook', headerName: 'Facebook URL', width: 150 },
+    { field: 'initDate', headerName: 'Ngày tạo', width: 180, valueFormatter: (params) => formatDate(params) },
     {
       field: 'actions',
       headerName: '',
       width: 120,
       sortable: false,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <button
           type="button"
-          className="btn btn-warning text-white"
+          className="btn btn-primary text-white"
           onClick={() => handleEditClick(params.row)}
         >
           Chỉnh sửa
@@ -28,6 +48,8 @@ const BrandsList = () => {
       headerName: '',
       width: 110,
       sortable: false,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <button
           type="button"
@@ -38,16 +60,8 @@ const BrandsList = () => {
         </button>
       ),
     },
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'name', headerName: 'Tên thương hiệu', width: 130 },
-    { field: 'brandType', headerName: 'Dịch vụ', width: 130 },
-    { field: 'phone', headerName: 'Số điện thoại', width: 150 },
-    { field: 'location', headerName: 'Địa chỉ', width: 80 },
-    { field: 'google', headerName: 'Google URL', width: 80 },
-    { field: 'facebook', headerName: 'Facebook URL', width: 150 },
-    { field: 'initDate', headerName: 'Ngày tạo', width: 180 },
   ];
-  const paginationModel = { page: 0, pageSize: 7 };
+  const paginationModel = { page: 0, pageSize: 20 };
   const [rows, setRows] = useState([]);
 
   const [open, setOpen] = useState(false);
@@ -59,7 +73,8 @@ const BrandsList = () => {
     phone: '',
     location: '',
     google: '',
-    facebook: ''
+    facebook: '',
+    image: null
   });
 
   const [snackbar, setSnackbar] = useState({
@@ -68,6 +83,8 @@ const BrandsList = () => {
     severity: 'success'
   });
 
+  const [imagePreview, setImagePreview] = useState(null);
+
   const handleClickOpen = () => {
     setFormData({
       name: '',
@@ -75,11 +92,15 @@ const BrandsList = () => {
       phone: '',
       location: '',
       google: '',
-      facebook: ''
+      facebook: '',
+      image: null
     });
     setOpen(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setImagePreview(null);
+  };
 
   const handleClickOpenEdit = () => setOpenEdit(true);
   const handleCloseEdit = () => setOpenEdit(false);
@@ -96,22 +117,46 @@ const BrandsList = () => {
   const handleAddSubmit = async () => {
     if (!validateForm()) return;
     try {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        showNotification('Vui lòng đăng nhập để thực hiện chức năng này', 'error');
+        return;
+      }
+
+      // Create FormData object to handle file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('google', formData.google);
+      formDataToSend.append('facebook', formData.facebook);
+      formDataToSend.append('brandType', JSON.stringify({
+        id: formData.brandType,
+        name: getBrandTypeName(formData.brandType)
+      }));
+      if (formData.image) {
+        formDataToSend.append('image', formData.image);
+      }
+
       const response = await fetch('http://localhost:8080/brand/add', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+          // Remove Content-Type header to let browser set it with boundary for FormData
         },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
       
-      const data = await response.json();
-
       if (response.ok) {
         showNotification('Thêm cửa hàng thành công');
         handleClose();
         setBrandAdded(!brandAdded);
+      } else if (response.status === 401) {
+        showNotification('Vui lòng đăng nhập lại để thực hiện chức năng này', 'error');
       } else {
-        showNotification(data.message || 'Thêm cửa hàng thất bại', 'error');
+        const errorData = await response.json();
+        showNotification(errorData.message || 'Thêm cửa hàng thất bại', 'error');
       }
     } catch (error) {
       console.error('Error adding brand:', error);
@@ -185,8 +230,10 @@ const handleEditClick = (brand) => {
     phone: brand.phone,
     location: brand.location,
     google: brand.google,
-    facebook: brand.facebook
+    facebook: brand.facebook,
+    image: null
   });
+  setImagePreview(brand.image ? `http://localhost:8080/uploads/${brand.image}` : null);
   setOpenEdit(true);
 };
 
@@ -200,19 +247,22 @@ const handleSubmitEdit = async () => {
       return;
     }
 
+    const formDataToSend = new FormData();
+    formDataToSend.append('name', formData.name);
+    formDataToSend.append('phone', formData.phone);
+    formDataToSend.append('location', formData.location);
+    formDataToSend.append('google', formData.google);
+    formDataToSend.append('facebook', formData.facebook);
+    if (formData.image) {
+      formDataToSend.append('image', formData.image);
+    }
+
     const response = await fetch(`http://localhost:8080/brand/edit/${formData.id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        name: formData.name,
-        phone: formData.phone,
-        location: formData.location,
-        google: formData.google,
-        facebook: formData.facebook
-      }),
+      body: formDataToSend,
     });
 
     if (response.ok) {
@@ -221,7 +271,6 @@ const handleSubmitEdit = async () => {
       setBrandAdded(!brandAdded);
     } else if (response.status === 401) {
       showNotification('ERROR AUTHORIZATION', 'error');
-      // Optionally redirect to login page
     } else {
       const errorData = await response.text();
       showNotification(errorData || 'Cập nhật thông tin thất bại', 'error');
@@ -249,11 +298,50 @@ const handleSubmitEdit = async () => {
   };
 
   const validateForm = () => {
-    if (!formData.name || !formData.phone || !formData.location) {
-      showNotification('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
+    // Add phone validation
+    const phoneRegex = /^[0-9]+$/;
+    if (!formData.name || !formData.location || !formData.google) {
+      showNotification('Vui lòng điền đầy đủ thông tin: Tên cửa hàng, địa chỉ và Google URL', 'error');
+      return false;
+    }
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      showNotification('Số điện thoại không hợp lệ. Vui lòng chỉ nhập số', 'error');
       return false;
     }
     return true;
+  };
+
+  // Add this helper function to get the brand type name
+  const getBrandTypeName = (id) => {
+    switch (parseInt(id)) {
+      case 1:
+        return "Ăn uống";
+      case 2:
+        return "Giải trí";
+      case 3:
+        return "Du lịch";
+      case 4:
+        return "Mua sắm";
+      default:
+        return "";
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prevData => ({
+        ...prevData,
+        image: file
+      }));
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -262,7 +350,7 @@ const handleSubmitEdit = async () => {
         <Button variant="contained" color="primary"  onClick={handleClickOpen}>Thêm cửa hàng</Button>
         <ExportButtonBrands />
       </Box>
-      <Paper sx={{ height: 500, width: '100%' }}>
+      <Paper sx={{ height: 'calc(80vh - 120px)', width: '100%' }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -290,10 +378,10 @@ const handleSubmitEdit = async () => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+            required
           />
           <Select
             margin="dense"
-            label="Loại cửa hàng"
             fullWidth
             name="brandType"
             value={formData.brandType}
@@ -314,6 +402,9 @@ const handleSubmitEdit = async () => {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
+            inputProps={{
+              pattern: '[0-9]*'
+            }}
           />
           <TextField 
             margin="dense"
@@ -323,6 +414,7 @@ const handleSubmitEdit = async () => {
             name="location"
             value={formData.location}
             onChange={handleInputChange}
+            required
           />
           <TextField
             margin="dense"
@@ -332,6 +424,7 @@ const handleSubmitEdit = async () => {
             name="google"
             value={formData.google}
             onChange={handleInputChange}
+            required
           />
           <TextField
             margin="dense"
@@ -342,6 +435,29 @@ const handleSubmitEdit = async () => {
             value={formData.facebook}
             onChange={handleInputChange}
           />
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              type="file"
+              fullWidth
+              inputProps={{
+                accept: 'image/*'
+              }}
+              onChange={handleFileChange}
+            />
+            {imagePreview && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '200px',
+                    objectFit: 'contain'
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">Huỷ</Button>
@@ -370,24 +486,29 @@ const handleSubmitEdit = async () => {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
+            inputProps={{
+              pattern: '[0-9]*'
+            }}
           />
           <TextField 
             margin="dense"
-            label="Địa chỉ"
+            label="Địa chỉ *"
             type="text"
             fullWidth
             name="location"
             value={formData.location}
             onChange={handleInputChange}
+            required
           />
           <TextField
             margin="dense"
-            label="Google URL"
+            label="Google URL *"
             type="text"
             fullWidth
             name="google"
             value={formData.google}
             onChange={handleInputChange}
+            required
           />
           <TextField
             margin="dense"
@@ -398,6 +519,29 @@ const handleSubmitEdit = async () => {
             value={formData.facebook}
             onChange={handleInputChange}
           />
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              type="file"
+              fullWidth
+              inputProps={{
+                accept: 'image/*'
+              }}
+              onChange={handleFileChange}
+            />
+            {imagePreview && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '200px',
+                    objectFit: 'contain'
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEdit} color="secondary">Huỷ</Button>

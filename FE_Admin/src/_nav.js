@@ -56,6 +56,12 @@ const _nav = [
     to: '/list/contactlist',
     icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: 'Xử lý báo cáo đánh giá',
+    to: '/list/reviewlist',
+    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
+  },
   // {
   //   component: CNavTitle,
   //   name: 'Theme',
