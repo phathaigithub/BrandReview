@@ -26,7 +26,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/employee/**","/user/**", "/auth/**", "/auth/logout", "/review/**", "/uploads/**"
+            "/employee/**","/user/**", "/auth/**", "/auth/logout", "/review/**", "/uploads/**" , "/contact/**"
     };
 
     @Value("${app.jwt.sign-key}")
@@ -44,9 +44,9 @@ public class SecurityConfig {
                     return config;
                 }))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.PUT,"/employee/**","/user/**", "/brand/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/employee/**","/user/**", "/brand/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**","/user/**","/user/get/**", "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/employee/**","/user/**", "/brand/**","/contact/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/employee/**","/user/**", "/brand/**","/contact/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/brand/**", "/employee/**","/user/**","/user/get/**", "/uploads/**","/contact/**").permitAll()
                         .requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );

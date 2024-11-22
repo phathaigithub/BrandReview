@@ -50,6 +50,12 @@ const _nav = [
     to: '/list/brandslist',
     icon: <CIcon icon={cilHouse} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: 'Yêu cầu khách hàng',
+    to: '/list/contactlist',
+    icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
+  },
   // {
   //   component: CNavTitle,
   //   name: 'Theme',

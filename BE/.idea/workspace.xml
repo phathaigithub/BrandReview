@@ -13,9 +13,12 @@
   <component name="ComposerSettings">
     <execution />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2oR6SmpSRyQg9hXyLwm2gPARjLo" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -24,13 +27,15 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "PhatHai",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Lenovo/Desktop/TDTU/.Hoc Ky 5/HangOut/BE/BrandReview",
+    "last_opened_file_path": "D:/Ton Duc Thang University/HK5/TH PTHTTTDN/Project/Project/BE/BrandReview",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "settings.editor.selected.configurable": "preferences.lookFeel",
     "vue.rearranger.settings.migration": "true"
   }
@@ -52,6 +57,7 @@
       <option name="presentableId" value="Default" />
       <updated>1730820044411</updated>
       <workItem from="1730820045058" duration="1889000" />
+      <workItem from="1731477084563" duration="33000" />
     </task>
     <servers />
   </component>

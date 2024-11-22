@@ -35,7 +35,7 @@ function UserRegister() {
             setErrorMessage("Vui lòng điền đầy đủ thông tin để đăng ký.");
             return;
         }
-        const regex = /^[\p{L}\s]+$/u;
+        const regex = /^[a-zA-ZÀ-ỹ\s]+$/;
         if (!regex.test(name)) {
             setErrorMessage("Họ và tên không hợp lệ");
             return;
@@ -47,7 +47,7 @@ function UserRegister() {
 
         const userInfo = { name, email, password };
         console.log(userInfo);
-        try {
+    try {
             const response = await fetch("http://localhost:8080/user/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
