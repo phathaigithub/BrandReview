@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Snackbar, Alert, Select, MenuItem } from '@mui/material';
 import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog'; 
 import ExportButtonUsers from './ExportButtonUsers.js';
 
@@ -71,7 +71,6 @@ const UsersList = () => {
   const [openEdit, setOpenEdit] = useState(false)
 
   const [formData, setFormData] = useState({
-    username: '',
     password: '',
     phone: '',
     email: '',
@@ -83,8 +82,7 @@ const UsersList = () => {
   const handleClickOpen = () => {
     setFormData({
       id:'',
-      username: '',
-      password: '', // Leave blank if password shouldn't be shown
+      password: '',
       phone: '',
       email: '',
       name:'',
@@ -108,6 +106,7 @@ const UsersList = () => {
   // Handle add user
   const [userAdded, setUserAdded] = useState(false);
   const handleAddSubmit = async () => {
+    if (!validateForm()) return;
     try {
       const response = await fetch('http://localhost:8080/user/add', {
         method: 'POST',
@@ -117,16 +116,16 @@ const UsersList = () => {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        alert('User added successfully');
-        handleClose();
-        setUserAdded(!userAdded);
-      } else {
-        alert('Failed to add user');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Thêm người dùng thất bại');
       }
+
+      showNotification('Thêm người dùng thành công');
+      handleClose();
+      setUserAdded(!userAdded);
     } catch (error) {
-      console.error('Error adding user:', error);
-      alert('Error occurred while adding user');
+      showNotification(error.message || 'Đã xảy ra lỗi khi thêm người dùng', 'error');
     }
   };
  // END ADD EMPOYEE
@@ -142,10 +141,10 @@ const UsersList = () => {
         }));
         setRows(mappedData);
       } else {
-        console.error('Failed to fetch user data');
+        showNotification('Không thể tải dữ liệu người dùng', 'error');
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      showNotification('Đã xảy ra lỗi khi tải dữ liệu người dùng', 'error');
     }
   };
 
@@ -167,22 +166,21 @@ const handleCloseDialog = () => {
   setOpenDialog(false);
   setUserToDelete(null);
 };
-const handleDelete = async (userId) => {
-
+const handleDelete = async () => {
   try {
     const response = await fetch(`http://localhost:8080/user/delete/${userToDelete}`, {
       method: 'DELETE',
     });
 
-    if (response.ok) {
-      // Update the state to remove the deleted user
-      setRows((prevRows) => prevRows.filter((row) => row.id !== userToDelete));
-    } else {
-      alert('Failed to delete user');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Xóa người dùng thất bại');
     }
+
+    setRows((prevRows) => prevRows.filter((row) => row.id !== userToDelete));
+    showNotification('Xóa người dùng thành công');
   } catch (error) {
-    console.error('Error deleting user:', error);
-    alert('Error occurred while deleting user');
+    showNotification(error.message || 'Đã xảy ra lỗi khi xóa người dùng', 'error');
   }
   handleCloseDialog();
 };
@@ -191,8 +189,7 @@ const handleDelete = async (userId) => {
 const handleEditClick = (user) => {
   setFormData({
     id: user.id,
-    username: user.username,
-    password: user.password, // Leave blank if password shouldn't be shown
+    password: '',
     phone: user.phone,
     email: user.email,
     name: user.name,
@@ -203,29 +200,100 @@ const handleEditClick = (user) => {
 };
 
 const handleSubmitEdit = async () => {
+  if (!validateForm()) return;
   try {
+    const formattedData = {
+      ...formData,
+      isEnable: true
+    };
+
+    // Only include password in the request if it's not empty
+    if (!formattedData.password || formattedData.password.trim() === '') {
+      delete formattedData.password;
+    }
+
     const response = await fetch(`http://localhost:8080/user/edit/${formData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(formattedData),
     });
 
-    if (response.ok) {
-      alert('User updated successfully');
-      handleClose();
-      setUserAdded(!userAdded);
-      setOpenEdit(false);
-    } else {
-      alert('Failed to update user');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Cập nhật thông tin thất bại');
     }
+
+    showNotification('Cập nhật thông tin thành công');
+    setOpenEdit(false);
+    setUserAdded(!userAdded);
   } catch (error) {
-    console.error('Error updating user:', error);
-    alert('Error occurred while updating user');
+    showNotification(error.message || 'Đã xảy ra lỗi khi cập nhật thông tin', 'error');
   }
 };
 // END EDITT
+
+  // Add Snackbar and Alert to imports
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showNotification = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
+
+  // Add form validation
+  const validateForm = () => {
+    const phoneRegex = /^[0-9]+$/;
+    
+    if (!formData.name) {
+      showNotification('Vui lòng điền tên người dùng', 'error');
+      return false;
+    }
+
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      showNotification('Số điện thoại không hợp lệ. Vui lòng chỉ nhập số', 'error');
+      return false;
+    }
+
+    if (formData.gender && !['Nam', 'Nữ'].includes(formData.gender)) {
+      showNotification('Giới tính chỉ có thể là Nam hoặc Nữ', 'error');
+      return false;
+    }
+
+    return true;
+  };
+
+  // Replace TextField for gender with Select in both dialogs
+  const genderField = (
+    <TextField
+      select
+      margin="dense"
+      label="Giới tính"
+      fullWidth
+      name="gender"
+      value={formData.gender}
+      onChange={handleInputChange}
+    >
+      <MenuItem value="">Chọn giới tính</MenuItem>
+      <MenuItem value="Nam">Nam</MenuItem>
+      <MenuItem value="Nữ">Nữ</MenuItem>
+    </TextField>
+  );
 
   return (
     <>
@@ -250,18 +318,8 @@ const handleSubmitEdit = async () => {
 
       {/* Popup Register Form */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Thêm nhân viên</DialogTitle>
+        <DialogTitle>Thêm người dùng</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Tên đăng nhập"
-            type="text"
-            fullWidth
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-          />
           <TextField
             margin="dense"
             label="Mật khẩu"
@@ -289,19 +347,10 @@ const handleSubmitEdit = async () => {
             value={formData.birth}
             onChange={handleInputChange}
             InputLabelProps={{
-              
-              shrink: true, // keeps the label visible above the date input
+              shrink: true,
             }}
           />
-          <TextField
-            margin="dense"
-            label="Giới tính"
-            type="text"
-            fullWidth
-            name="gender"
-            value={formData.gender}
-            onChange={handleInputChange}
-          />
+          {genderField}
           <TextField
             margin="dense"
             label="Số điện thoại"
@@ -331,16 +380,6 @@ const handleSubmitEdit = async () => {
         <DialogTitle>Chỉnh sửa tài khoản người dùng</DialogTitle>
         <DialogContent>
           <TextField
-            autoFocus
-            margin="dense"
-            label="Tên đăng nhập"
-            type="text"
-            fullWidth
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-          />
-          <TextField
             margin="dense"
             label="Mật khẩu"
             type="password"
@@ -368,15 +407,7 @@ const handleSubmitEdit = async () => {
             onChange={handleInputChange}
             InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            margin="dense"
-            label="Giới tính"
-            type="text"
-            fullWidth
-            name="gender"
-            value={formData.gender}
-            onChange={handleInputChange}
-          />
+          {genderField}
           <TextField
             margin="dense"
             label="Số điện thoại"
@@ -409,6 +440,22 @@ const handleSubmitEdit = async () => {
         onClose={handleCloseDialog}
         onConfirm={handleDelete}
       />
+
+      {/* Add Snackbar component at the end */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
 );
 };

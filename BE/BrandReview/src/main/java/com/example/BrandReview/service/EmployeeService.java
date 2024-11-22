@@ -11,4 +11,6 @@ public interface EmployeeService {
     public void deleteEmployee(int id);
     public Optional<Employee> getEmployeeById(int id);
     Employee updateEmployee(int id, Employee updatedEmployee);
+    Optional<Employee> getEmployeeByUsername(String username);
+    Employee updateEmployeeByUsername(String username, Employee updatedEmployee);
 }

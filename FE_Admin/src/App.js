@@ -3,6 +3,7 @@ import { Route, Routes, BrowserRouter } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
+import { jwtDecode } from 'jwt-decode'
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -31,6 +32,17 @@ const App = () => {
     setColorMode(storedTheme)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const isAuthenticated = () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      if (!token) return false
+      
+      const decoded = jwtDecode(token)
+      return !!decoded.position
+    } catch (error) {
+      return false
+    }
+  }
 
   return (
     <BrowserRouter>
@@ -42,8 +54,11 @@ const App = () => {
         }
       >
         <Routes>
-
-          <Route exact path="/" name="Login Page" element={<Login />} />
+          <Route
+            exact
+            path="/"
+            element={isAuthenticated() ? <DefaultLayout /> : <Login />}
+          />
           {/* <Route exact path="/register" name="Register Page" element={<Register />} /> */}
           <Route exact path="/404" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />

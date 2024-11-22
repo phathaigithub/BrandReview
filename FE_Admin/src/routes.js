@@ -59,6 +59,8 @@ const BrandsList = React.lazy(() => import("./views/list/BrandsList/BrandsList")
 const ContactList = React.lazy(() => import("./views/list/ContactList/ContactList"))
 const ReviewList = React.lazy(() => import("./views/list/ReviewList/ReviewList"))
 
+const ProfilePage = React.lazy(() => import('./views/pages/profile/ProfilePage'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -114,6 +116,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/profile', name: 'Thông tin cá nhân', element: ProfilePage },
 ]
 
 export default routes

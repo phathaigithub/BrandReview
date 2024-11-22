@@ -1,6 +1,8 @@
 package com.example.BrandReview.controller;
 
 import com.example.BrandReview.dto.response.ApiResponse;
+import com.example.BrandReview.exception.AppException;
+import com.example.BrandReview.exception.ErrorCode;
 import com.example.BrandReview.model.Employee;
 import com.example.BrandReview.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -106,5 +108,23 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping("/{username}")
+    public ApiResponse<Employee> getEmployeeByUsername(@PathVariable("username") String username) {
+        ApiResponse<Employee> response = new ApiResponse<>();
+        Employee employee = employeeService.getEmployeeByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        response.setResult(employee);
+        return response;
+    }
+
+    @PutMapping("/editusername/{username}")
+    public ApiResponse<Employee> editByUsername(
+            @PathVariable("username") String username, 
+            @RequestBody @Valid Employee updatedEmployee) {
+        ApiResponse<Employee> response = new ApiResponse<>();
+        Employee updated = employeeService.updateEmployeeByUsername(username, updatedEmployee);
+        response.setResult(updated);
+        return response;
+    }
 
 }

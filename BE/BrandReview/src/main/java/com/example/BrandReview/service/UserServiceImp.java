@@ -56,13 +56,15 @@ public class UserServiceImp implements UserService {
     public User updateUser(int userid, User updateUser) {
         User existingUser = userRepository.findById(userid)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-
         existingUser.setName(updateUser.getName());
         existingUser.setPhone(updateUser.getPhone());
         existingUser.setEmail(updateUser.getEmail());
         existingUser.setGender(updateUser.getGender());
         existingUser.setBirth(updateUser.getBirth());
 
+        if (updateUser.getPassword() != null && !updateUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+        }
         return userRepository.save(existingUser);
     }
 }

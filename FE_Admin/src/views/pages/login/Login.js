@@ -12,19 +12,21 @@ import {
     CInputGroup,
     CInputGroupText,
     CRow,
+    CSpinner,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
-import axios from 'axios';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
         try {
             const response = await fetch('http://localhost:8080/auth/employee', {
@@ -51,6 +53,8 @@ const Login = () => {
         } catch (err) {
             setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
             console.error('Error:', err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -91,8 +95,15 @@ const Login = () => {
                                         </CInputGroup>
                                         <CRow>
                                             <CCol xs={6}>
-                                                <CButton color="primary" className="px-4" type="submit">
-                                                    Đăng nhập
+                                                <CButton color="primary" className="px-4" type="submit" disabled={isLoading}>
+                                                    {isLoading ? (
+                                                        <>
+                                                            <CSpinner component="span" size="sm" aria-hidden="true"/>
+                                                            &nbsp;Đang đăng nhập...
+                                                        </>
+                                                    ) : (
+                                                        'Đăng nhập'
+                                                    )}
                                                 </CButton>
                                             </CCol>
                                             <CCol xs={6} className="text-right">

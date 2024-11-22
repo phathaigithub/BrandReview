@@ -33,18 +33,27 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public Employee saveEmployee(Employee employee) {
-        Position defaultPosition = positionRepository.findById(3)
-                .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND)); // Ensure the default position exists
+        // Chỉ set position mặc định nếu không có position được truyền vào
+        if (employee.getPosition() == null) {
+            Position defaultPosition = positionRepository.findById(3)
+                    .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+            employee.setPosition(defaultPosition);
+        } else {
+            // Nếu có position, kiểm tra position có tồn tại trong DB không
+            Position position = positionRepository.findById(employee.getPosition().getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+            employee.setPosition(position);
+        }
 
-        employee.setPosition(defaultPosition);
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+        
         if (employeeRepository.existsByUsername(employee.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         if (employeeRepository.existsByEmail(employee.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
-        // Save the employee
+        
         return employeeRepository.save(employee);
     }
 
@@ -75,6 +84,11 @@ public class EmployeeServiceImp implements EmployeeService {
         existingEmployee.setGender(updatedEmployee.getGender());
         existingEmployee.setBirth(updatedEmployee.getBirth());
 
+        // Only update password if a new one is provided
+        if (updatedEmployee.getPassword() != null && !updatedEmployee.getPassword().isEmpty()) {
+            existingEmployee.setPassword(passwordEncoder.encode(updatedEmployee.getPassword()));
+        }
+
         // Update position if needed
         if (updatedEmployee.getPosition() != null) {
             Position position = positionRepository.findById(updatedEmployee.getPosition().getId())
@@ -85,6 +99,34 @@ public class EmployeeServiceImp implements EmployeeService {
         return employeeRepository.save(existingEmployee);
     }
 
+    @Override
+    public Employee updateEmployeeByUsername(String username, Employee updatedEmployee) {
+        Employee existingEmployee = employeeRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
+        // Only update fields that should be editable
+        if (updatedEmployee.getName() != null) {
+            existingEmployee.setName(updatedEmployee.getName());
+        }
+        if (updatedEmployee.getPhone() != null) {
+            existingEmployee.setPhone(updatedEmployee.getPhone());
+        }
+        if (updatedEmployee.getEmail() != null) {
+            existingEmployee.setEmail(updatedEmployee.getEmail());
+        }
+        if (updatedEmployee.getGender() != null) {
+            existingEmployee.setGender(updatedEmployee.getGender());
+        }
+        if (updatedEmployee.getBirth() != null) {
+            existingEmployee.setBirth(updatedEmployee.getBirth());
+        }
+
+        return employeeRepository.save(existingEmployee);
+    }
+
+    @Override
+    public Optional<Employee> getEmployeeByUsername(String username) {
+        return employeeRepository.findByUsername(username);
+    }
 
 }

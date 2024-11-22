@@ -8,7 +8,7 @@ import Section7 from "./Section7";
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import BrandDetailReview from "./BrandDetailReview";
-import { Modal, Button as AntButton, Image } from 'antd';
+import { Modal, Button as AntButton, Image, message } from 'antd';
 import ReviewForm from "./ReviewForm";
 import { jwtDecode } from "jwt-decode";
 
@@ -36,7 +36,12 @@ const BrandDetail = () => {
     if (isLoggedIn()) {
         tokenData = jwtDecode(localStorage.getItem('authToken'));
     }
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const showModal = () => {
+        if (!isLoggedIn()) {
+            setShowLoginPrompt(true);
+            return;
+        }
         setIsModalOpen(true);
     };
     const handleOk = () => {
@@ -46,6 +51,13 @@ const BrandDetail = () => {
     const handleCancel = () => {
         setIsModalOpen(false);
         refreshBrandData(); // Refresh the brand data
+    };
+    const handleLoginClick = () => {
+        setShowLoginPrompt(false);
+        history.push('/register');
+    };
+    const handleLoginPromptCancel = () => {
+        setShowLoginPrompt(false);
     };
     useEffect(() => {
         // Fetch brand data based on the slug
@@ -310,6 +322,34 @@ const BrandDetail = () => {
                     </Row>
                 </Container>
             </section>
+            <Modal
+                title="Thông báo"
+                open={showLoginPrompt}
+                onCancel={handleLoginPromptCancel}
+                footer={[
+                    <Button 
+                        key="cancel" 
+                        onClick={handleLoginPromptCancel}
+                        style={{ 
+                            backgroundColor: '#f0f0f0',
+                            border: '1px solid #f0f0f0',
+                            color: '#666666',
+                            marginRight: '8px'
+                        }}
+                    >
+                        Hủy
+                    </Button>,
+                    <Button 
+                        key="login" 
+                        type="primary" 
+                        onClick={handleLoginClick}
+                    >
+                        Đăng nhập
+                    </Button>,
+                ]}
+            >
+                <p>Bạn cần đăng nhập để thực hiện đánh giá</p>
+            </Modal>
         </Layout>
     );
 };

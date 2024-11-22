@@ -136,6 +136,23 @@ public class ReviewController {
         }
     }
 
+    @PutMapping("/markValid/{id}")
+    public ApiResponse<Review> markValidReview(@PathVariable Integer id) {
+        try {
+            Review review = reviewRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Review not found"));
+            review.setStatus(2); // Set status to 2 for "valid"
+            reviewRepository.save(review);
+            
+            ApiResponse<Review> response = new ApiResponse<>();
+            response.setCode(200);
+            response.setResult(review);
+            return response;
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+    }
+
     @GetMapping("/getAllReviews")
     public List<ReviewDTO> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();

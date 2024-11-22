@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import { Button, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Snackbar, Alert, Select, MenuItem } from '@mui/material';
 import DeleteConfirmDialog from './DeleteConfirmDialog'; 
 import ExportButton from './ExportButton';
 
@@ -24,7 +24,19 @@ const EmployeesList = () => {
     { field: 'birth', headerName: 'Ngày sinh', width: 80 },
     { field: 'phone', headerName: 'Số điện thoại', width: 150 },
     { field: 'email', headerName: 'Email', width: 220 },
-    { field: 'positionName', headerName: 'Vị trí', width: 150 }, 
+    { 
+      field: 'positionName', 
+      headerName: 'Vị trí', 
+      width: 150,
+      renderCell: (params) => {
+        console.log('Position:', params.value);
+        const value = params.value;
+        if (value === 'CustomerEmployee') return 'Nhân viên CSKH';
+        if (value === 'Employee') return 'Nhân viên';
+        if (value === 'Manager') return 'Quản lý';
+        return value;
+      }
+    },
     { 
       field: 'initDate', 
       headerName: 'Ngày tạo', 
@@ -71,7 +83,11 @@ const EmployeesList = () => {
 
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false)
-
+  const positions = [
+    { id: 2, name: 'Quản lý' },
+    { id: 3, name: 'Nhân viên' },
+    { id: 4, name: 'Nhân viên CSKH' }
+  ];
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -79,7 +95,8 @@ const EmployeesList = () => {
     email: '',
     name: '',
     birth: '',
-    gender: ''
+    gender: '',
+    position: ''
   });
 
   const handleClickOpen = () => {
@@ -92,6 +109,7 @@ const EmployeesList = () => {
       name:'',
       birth: '',
       gender: '',
+      position: ''
     });
     setOpen(true);
   };
@@ -110,25 +128,32 @@ const EmployeesList = () => {
   // Handle add employee
   const [employeeAdded, setEmployeeAdded] = useState(false);
   const handleAddSubmit = async () => {
+    if (!validateForm()) return;
     try {
+      const formattedData = {
+        ...formData,
+        position: formData.position ? { id: parseInt(formData.position) } : null,
+        isEnable: true
+      };
+
       const response = await fetch('http://localhost:8080/employee/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formattedData),
       });
 
-      if (response.ok) {
-        alert('Employee added successfully');
-        handleClose();
-        setEmployeeAdded(!employeeAdded);
-      } else {
-        alert('Failed to add employee');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Thêm nhân viên thất bại');
       }
+
+      showNotification('Thêm nhân viên thành công');
+      handleClose();
+      setEmployeeAdded(!employeeAdded);
     } catch (error) {
-      console.error('Error adding employee:', error);
-      alert('Error occurred while adding employee');
+      showNotification(error.message || 'Đã xảy ra lỗi khi thêm nhân viên', 'error');
     }
   };
  // END ADD EMPOYEE
@@ -141,14 +166,14 @@ const EmployeesList = () => {
         const data = await response.json();
         const mappedData = data.map((employee) => ({
           ...employee,
-          positionName: employee.position?.name || '', // Extract name from position object
+          positionName: employee.position?.name || '',
         }));
         setRows(mappedData);
       } else {
-        console.error('Failed to fetch employee data');
+        showNotification('Không thể tải dữ liệu nhân viên', 'error');
       }
     } catch (error) {
-      console.error('Error fetching employee data:', error);
+      showNotification('Đã xảy ra lỗi khi tải dữ liệu nhân viên', 'error');
     }
   };
 
@@ -170,22 +195,21 @@ const handleCloseDialog = () => {
   setOpenDialog(false);
   setEmployeeToDelete(null);
 };
-const handleDelete = async (employeeId) => {
-
+const handleDelete = async () => {
   try {
     const response = await fetch(`http://localhost:8080/employee/delete/${employeeToDelete}`, {
       method: 'DELETE',
     });
 
-    if (response.ok) {
-      // Update the state to remove the deleted employee
-      setRows((prevRows) => prevRows.filter((row) => row.id !== employeeToDelete));
-    } else {
-      alert('Failed to delete employee');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Xóa nhân viên thất bại');
     }
+
+    setRows((prevRows) => prevRows.filter((row) => row.id !== employeeToDelete));
+    showNotification('Xóa nhân viên thành công');
   } catch (error) {
-    console.error('Error deleting employee:', error);
-    alert('Error occurred while deleting employee');
+    showNotification(error.message || 'Đã xảy ra lỗi khi xóa nhân viên', 'error');
   }
   handleCloseDialog();
 };
@@ -193,42 +217,121 @@ const handleDelete = async (employeeId) => {
 //// EDITTTTT
 const handleEditClick = (employee) => {
   setFormData({
-    id: employee.id,
-    username: employee.username,
-    password: employee.password, // Leave blank if password shouldn't be shown
-    phone: employee.phone,
-    email: employee.email,
-    name: employee.name,
-    birth: employee.birth,
-    gender: employee.gender,
+    ...employee,
+    position: employee.position?.id || '',
+    password: ''
   });
   setOpenEdit(true);
 };
 
 const handleSubmitEdit = async () => {
+  if (!validateForm()) return;
   try {
+    const formattedData = {
+      ...formData,
+      position: formData.position ? { id: parseInt(formData.position) } : null,
+      isEnable: true
+    };
+
+    if (!formattedData.password || formattedData.password.trim() === '') {
+      delete formattedData.password;
+    }
+
     const response = await fetch(`http://localhost:8080/employee/edit/${formData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(formattedData),
     });
 
-    if (response.ok) {
-      alert('Employee updated successfully');
-      handleClose();
-      setEmployeeAdded(!employeeAdded);
-      setOpenEdit(false);
-    } else {
-      alert('Failed to update employee');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Cập nhật thông tin thất bại');
     }
+
+    showNotification('Cập nhật thông tin thành công');
+    setOpenEdit(false);
+    setEmployeeAdded(!employeeAdded);
   } catch (error) {
-    console.error('Error updating employee:', error);
-    alert('Error occurred while updating employee');
+    showNotification(error.message || 'Đã xảy ra lỗi khi cập nhật thông tin', 'error');
   }
 };
 // END EDITT
+
+  // Add snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showNotification = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
+
+  // Add validation function
+  const validateForm = () => {
+    const phoneRegex = /^[0-9]+$/;
+    
+    if (!formData.username) {
+      showNotification('Vui lòng nhập tên đăng nhập', 'error');
+      return false;
+    }
+    
+    if (!formData.name) {
+      showNotification('Vui lòng nhập tên nhân viên', 'error');
+      return false;
+    }
+    
+    if (!formData.position) {
+      showNotification('Vui lòng chọn vị trí', 'error');
+      return false;
+    }
+
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      showNotification('Số điện thoại không hợp lệ. Vui lòng chỉ nhập số', 'error');
+      return false;
+    }
+
+    if (formData.gender && !['Nam', 'Nữ'].includes(formData.gender)) {
+      showNotification('Giới tính chỉ có thể là Nam hoặc Nữ', 'error');
+      return false;
+    }
+
+    return true;
+  };
+
+  // Replace the gender TextField with Select in both dialogs
+  const genderField = (
+    <TextField
+      select
+      margin="dense"
+      label="Giới tính"
+      fullWidth
+      name="gender"
+      value={formData.gender}
+      onChange={handleInputChange}
+      SelectProps={{
+        native: true,
+      }}
+    >
+      <option value="">Chọn giới tính</option>
+      <option value="Nam">Nam</option>
+      <option value="Nữ">Nữ</option>
+    </TextField>
+  );
 
   return (
     <>
@@ -296,15 +399,7 @@ const handleSubmitEdit = async () => {
               shrink: true, // keeps the label visible above the date input
             }}
           />
-          <TextField
-            margin="dense"
-            label="Giới tính"
-            type="text"
-            fullWidth
-            name="gender"
-            value={formData.gender}
-            onChange={handleInputChange}
-          />
+          {genderField}
           <TextField
             margin="dense"
             label="Số điện thoại"
@@ -323,6 +418,25 @@ const handleSubmitEdit = async () => {
             value={formData.email}
             onChange={handleInputChange}
           />
+          <TextField
+            select
+            margin="dense"
+            label="Vị trí"
+            fullWidth
+            name="position"
+            value={formData.position}
+            onChange={handleInputChange}
+            SelectProps={{
+              native: true,
+            }}
+          >
+            <option value="">Chọn vị trí</option>
+            {positions.map((position) => (
+              <option key={position.id} value={position.id}>
+                {position.name}
+              </option>
+            ))}
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">Huỷ</Button>
@@ -371,15 +485,7 @@ const handleSubmitEdit = async () => {
             onChange={handleInputChange}
             InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            margin="dense"
-            label="Giới tính"
-            type="text"
-            fullWidth
-            name="gender"
-            value={formData.gender}
-            onChange={handleInputChange}
-          />
+          {genderField}
           <TextField
             margin="dense"
             label="Số điện thoại"
@@ -398,6 +504,25 @@ const handleSubmitEdit = async () => {
             value={formData.email}
             onChange={handleInputChange}
           />
+          <TextField
+            select
+            margin="dense"
+            label="Vị trí"
+            fullWidth
+            name="position"
+            value={formData.position}
+            onChange={handleInputChange}
+            SelectProps={{
+              native: true,
+            }}
+          >
+            <option value="">Chọn vị trí</option>
+            {positions.map((position) => (
+              <option key={position.id} value={position.id}>
+                {position.name}
+              </option>
+            ))}
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEdit} color="secondary">Huỷ</Button>
@@ -412,6 +537,21 @@ const handleSubmitEdit = async () => {
         onClose={handleCloseDialog}
         onConfirm={handleDelete}
       />
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
 );
 };
