@@ -11,6 +11,7 @@ import BrandDetailReview from "./BrandDetailReview";
 import { Modal, Button as AntButton, Image, message } from 'antd';
 import ReviewForm from "./ReviewForm";
 import { jwtDecode } from "jwt-decode";
+import { FaFacebook } from "react-icons/fa";
 
 const BrandDetail = () => {
 
@@ -197,6 +198,15 @@ const BrandDetail = () => {
             });
     };
     
+    // Add this function to handle report click
+    const handleReportClick = () => {
+        if (!isLoggedIn()) {
+            setShowLoginPrompt(true);
+            return false;
+        }
+        return true;
+    };
+
     return (
         <Layout>
             <section className="brand_section">
@@ -207,7 +217,28 @@ const BrandDetail = () => {
                         </Col>
                         <Col className="col-6 bg-white border border-start-0 p-0">
                             <Row>
-                                <h4 className="brand_name">{brand.name}</h4>
+                                <h4 className="brand_name">
+                                    {brand.name}
+                                    {brand.facebook && (
+                                        <a
+                                            href={brand.facebook.startsWith('https://') 
+                                                ? brand.facebook 
+                                                : `https://${brand.facebook.startsWith('www.') ? '' : 'www.'}${brand.facebook}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="ms-2"
+                                            style={{
+                                                color: '#1877F2',
+                                                textDecoration: 'none',
+                                                display: 'inline-block',
+                                                verticalAlign: 'middle',
+                                                marginBottom: '10px'
+                                            }}
+                                        >
+                                            <FaFacebook size={24} />
+                                        </a>
+                                    )}
+                                </h4>
                                 <p className="brand_type">{brand.brandType.name}</p>
                             </Row>
                             <Row>
@@ -289,7 +320,10 @@ const BrandDetail = () => {
                                 <Col className="col-12">
                                     {brand.reviews && brand.reviews.length > 0 ? (
                                         brand.reviews.map((review, index) => (
-                                            <BrandDetailReview review={review} />
+                                            <BrandDetailReview 
+                                                review={review} 
+                                                onReportClick={handleReportClick}  // Pass the handler to child component
+                                            />
                                         ))
                                     ) : (
                                         <div className="text-center p-4 border-bottom">

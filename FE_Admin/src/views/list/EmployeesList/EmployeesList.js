@@ -284,14 +284,28 @@ const handleSubmitEdit = async () => {
   // Add validation function
   const validateForm = () => {
     const phoneRegex = /^[0-9]+$/;
+    const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/; // Allows letters, Vietnamese characters and spaces
     
     if (!formData.username) {
       showNotification('Vui lòng nhập tên đăng nhập', 'error');
       return false;
     }
     
+    // Enhanced name validation
     if (!formData.name) {
       showNotification('Vui lòng nhập tên nhân viên', 'error');
+      return false;
+    }
+    if (formData.name.trim().length < 2) {
+      showNotification('Tên nhân viên phải có ít nhất 2 ký tự', 'error');
+      return false;
+    }
+    if (!nameRegex.test(formData.name)) {
+      showNotification('Tên nhân viên chỉ được chứa chữ cái và khoảng trắng', 'error');
+      return false;
+    }
+    if (formData.name.trim().length > 50) {
+      showNotification('Tên nhân viên không được vượt quá 50 ký tự', 'error');
       return false;
     }
     
@@ -310,6 +324,14 @@ const handleSubmitEdit = async () => {
       return false;
     }
 
+    if (formData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        showNotification('Email không hợp lệ', 'error');
+        return false;
+      }
+    }
+
     return true;
   };
 
@@ -318,7 +340,6 @@ const handleSubmitEdit = async () => {
     <TextField
       select
       margin="dense"
-      label="Giới tính"
       fullWidth
       name="gender"
       value={formData.gender}
@@ -421,7 +442,6 @@ const handleSubmitEdit = async () => {
           <TextField
             select
             margin="dense"
-            label="Vị trí"
             fullWidth
             name="position"
             value={formData.position}
@@ -514,6 +534,9 @@ const handleSubmitEdit = async () => {
             onChange={handleInputChange}
             SelectProps={{
               native: true,
+            }}
+            InputLabelProps={{
+              shrink: true,
             }}
           >
             <option value="">Chọn vị trí</option>

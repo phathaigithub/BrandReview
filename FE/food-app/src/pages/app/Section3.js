@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import BrandTab from "./BrandTab";
-import ReviewTab from "./ReviewTab";
 
 // Mock
 const Section3 = () => {
   const [brandData, setBrandData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('Brand'); // Track active tab
-  const [category, setCategory] = useState(''); // Track selected category
+  const [category, setCategory] = useState('');
   
   // Fetch brands when the component is mounted
   useEffect(() => {
@@ -57,13 +55,8 @@ const Section3 = () => {
     }
     return stars;
   };
-  const changeTab = (tab) => {
-    setActiveTab(tab);
-    setCategory("");
-  }
   const changeCategory = (cate) => {
     setCategory(cate);
-    setActiveTab("Brand");
   }
   return (
     <section className="menu_section py-0 pt-3">
@@ -78,13 +71,9 @@ const Section3 = () => {
               </div>
               <ul className="nav flex-column bg-white border-top pe-0">
                 <li className="nav-item">
-                  <a
-                    href="javascript:void(0);"
-                    className={`sidebar nav-link ${activeTab === 'Brand' ? 'active' : ''}`}
-                    onClick={() => {changeTab("Brand");}}
-                  >
+                  <a href="javascript:void(0);" className="sidebar nav-link active">
                     Thương hiệu
-                    <i className={`bi bi-chevron-down ${activeTab === 'Brand' ? '' : 'd-none'}`}></i>
+                    <i className="bi bi-chevron-down"></i>
                   </a>
                   <a href="javascript:void(0);" className={`sidebar nav-link ps-4 ${category === 'Ăn uống' ? 'active' : ''}`} onClick={() => changeCategory('Ăn uống')}>
                     Ăn uống
@@ -99,29 +88,16 @@ const Section3 = () => {
                     Mua sắm
                   </a>
                 </li>
-                <li className="nav-item border-top ">
-                  <a
-                    className={`sidebar nav-link ${activeTab === 'Review' ? 'active' : ''}`}
-
-                    onClick={() => changeTab("Review")}
-                  >
-                    Đánh giá
-                    <i className={`bi bi-chevron-right ${activeTab === 'Review' ? '' : 'd-none'}`}></i>
-                  </a>
-                </li>
               </ul>
             </Row>
           </Col>
           <Col lg={{ span: 10 }}>
             <Row>
-              {activeTab === 'Brand' && (
-                <BrandTab
-                  brandData={brandData}
-                  renderRatingIcons={renderRatingIcons}
-                  type={category}
-                />
-              )}
-              {activeTab === 'Review' && <ReviewTab />}
+              <BrandTab
+                brandData={brandData}
+                renderRatingIcons={renderRatingIcons}
+                type={category}
+              />
             </Row>
           </Col>
         </Row>

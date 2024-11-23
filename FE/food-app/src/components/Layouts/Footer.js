@@ -32,9 +32,9 @@ function Footer() {
             <Col sm={6} lg={3} className="mb-4 mb-lg-0">
               <div className="text-center">
                 <h5>Location</h5>
-                <p>5505 Waterford District</p>
-                <p>Dr, Miami, FL 33126</p>
-                <p>United States</p>
+                <p>Tân Hưng, Quận 7, TP.HCM</p>
+                <p>19 Nguyễn Hữu Thọ</p>
+                <p>Việt Nam</p>
               </div>
             </Col>
             <Col sm={6} lg={3} className="mb-4 mb-lg-0">
@@ -47,10 +47,10 @@ function Footer() {
             </Col>
             <Col sm={6} lg={3} className="mb-4 mb-lg-0">
               <div className="text-center">
-                <h5>Order Now</h5>
-                <p>Quaerat neque purus ipsum</p>
+                <h5>CONTACT NOW</h5>
+                <p></p>
                 <p>
-                  <Link to="tel:9998887777" className="calling">
+                  <Link to="/" className="calling">
                     999-888-7777
                   </Link>
                 </p>
@@ -59,7 +59,6 @@ function Footer() {
             <Col sm={6} lg={3} className="mb-4 mb-lg-0">
               <div className="text-center">
                 <h5>Follow Us</h5>
-                <p>Quaerat neque purus ipsum</p>
                 <ul className="list-unstyled text-center mt-2">
                   <li>
                     <Link to="/">

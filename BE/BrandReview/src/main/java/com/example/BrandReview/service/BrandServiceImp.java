@@ -83,6 +83,7 @@ public class BrandServiceImp implements BrandService {
         existingBrand.setLocation(updatedBrand.getLocation());
         existingBrand.setGoogle(updatedBrand.getGoogle());
         existingBrand.setFacebook(updatedBrand.getFacebook());
+        existingBrand.setPriority(updatedBrand.getPriority());
         
         // Update image only if a new one is provided
         if (updatedBrand.getImage() != null) {

@@ -259,15 +259,6 @@ const ProfileTab = () => {
                 value={userData.birth}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                onClick={(e) => {
-                  if (!isEditing) return;
-                  e.target.showPicker();
-                }}
-                onKeyDown={(e) => {
-                  if (!isEditing) return;
-                  e.preventDefault();
-                  e.target.showPicker();
-                }}
               />
             </Form.Group>
           </Col>

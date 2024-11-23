@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import { Button, Box, Snackbar, Alert } from '@mui/material';
-import { Tag } from 'antd';
+import { Tag, Image } from 'antd';
 
 const ReviewList = () => {
   const [rows, setRows] = useState([]);
@@ -45,6 +45,36 @@ const ReviewList = () => {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => getStatusTag(params.value)
+    },
+    { 
+      field: 'images', 
+      headerName: 'Hình ảnh', 
+      width: 130,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => {
+        if (!params.row.images || params.row.images.length === 0) {
+          return <span>Không có ảnh</span>;
+        }
+        
+        return (
+          <Image.PreviewGroup>
+            {params.row.images.map((image, index) => (
+              <Image
+                key={index}
+                src={`http://localhost:8080/uploads/${image.path}`}
+                width={40}
+                height={40}
+                style={{ objectFit: 'cover', marginRight: '4px' }}
+                preview={{
+                  mask: index === 0 ? `${params.row.images.length} ảnh` : false,
+                  maskClassName: 'custom-mask'
+                }}
+              />
+            ))}
+          </Image.PreviewGroup>
+        );
+      }
     },
     {
       field: 'actions',
@@ -137,7 +167,8 @@ const ReviewList = () => {
             brandName: review.brandName || 'Unknown Brand',
             content: review.content,
             initDate: review.initDate,
-            status: review.status
+            status: review.status,
+            images: review.images || []
           }));
           console.log(mappedData);
           setRows(mappedData);

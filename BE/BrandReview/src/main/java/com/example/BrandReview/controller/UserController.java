@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -95,7 +96,7 @@ public class UserController {
 
             // Tạo dòng header
             Row headerRow = sheet.createRow(0);
-            String[] columnHeaders = {"ID", "Username", "Name", "Gender", "Phone", "Email", "InitDate"};
+            String[] columnHeaders = {"ID", "Name", "Gender", "Phone", "Email", "InitDate"};
             for (int i = 0; i < columnHeaders.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columnHeaders[i]);
@@ -171,6 +172,24 @@ public class UserController {
         } catch (IOException e) {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+    }
+
+    @PutMapping("/change-password/{id}")
+    public ApiResponse<String> changePassword(
+            @PathVariable("id") int userId,
+            @RequestBody Map<String, String> passwords) {
+        ApiResponse<String> response = new ApiResponse<>();
+        
+        userService.changePassword(
+            userId,
+            passwords.get("oldPassword"),
+            passwords.get("newPassword")
+        );
+        
+        response.setCode(200);
+        response.setMessage("Password changed successfully");
+        response.setResult("Password updated");
+        return response;
     }
 
 }

@@ -124,8 +124,11 @@ public class ReviewController {
         try {
             Review review = reviewRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Review not found"));
-            review.setStatus(1);
-            reviewRepository.save(review);
+            // Only change status to reported if it's not already marked as valid
+            if (review.getStatus() != 2) {
+                review.setStatus(1);
+                reviewRepository.save(review);
+            }
             
             ApiResponse<Review> response = new ApiResponse<>();
             response.setCode(200);
@@ -164,7 +167,8 @@ public class ReviewController {
                 review.getContent(),
                 review.getInitDate(),
                 review.getStatus(),
-                review.getBrand().getId()
+                review.getBrand().getId(),
+                review.getImages()
             ))
             .collect(Collectors.toList());
     }

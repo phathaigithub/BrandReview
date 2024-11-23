@@ -67,4 +67,17 @@ public class UserServiceImp implements UserService {
         }
         return userRepository.save(existingUser);
     }
+
+    @Override
+    public void changePassword(int userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD);
+        }
+                
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }

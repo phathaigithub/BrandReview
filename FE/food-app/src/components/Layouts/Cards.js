@@ -36,21 +36,21 @@ function Cards({ id, name, image, status, priority, phone, google, location, fac
                             <h5 className="mb-0">{calc_avg_score(reviews).toFixed(1)} <i class="bi bi-star-fill"></i></h5>
                         </div>
                         {/* <div className="item_rating">{renderRatingIcons(rating)}</div> */}
-                        <div className="wishlist">
+                        {/* <div className="wishlist">
                             <i class="bi bi-heart"></i>
-                        </div>
+                        </div> */}
                     </div>
                     <Card.Title>{name}</Card.Title>
                     <Card.Text className="hidden-two-line" style={{ minHeight: '48px' }}>{location}</Card.Text>
 
                     <div className="d-flex align-items-center justify-content-between">
-
-                        <div className="add_to_card">
+                            <p></p>
+                        {/* <div className="add_to_card">
                             <Link to="/">
                                 <i class="bi bi-bag me-2"></i>
                                 Add To Cart
                             </Link>
-                        </div>
+                        </div> */}
                     </div>
                 </Card.Body>
             </Link>

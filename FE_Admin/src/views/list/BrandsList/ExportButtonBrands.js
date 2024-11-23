@@ -1,27 +1,35 @@
 import React from 'react';
 import { Button } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 const ExportButtonBrands = () => {
   const handleExport = async () => {
     try {
-      const response = await fetch('http://localhost:8080/brands/export', {
+      const response = await fetch('http://localhost:8080/brand/export', {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        },
       });
 
       if (response.ok) {
+        // Get the blob from the response
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(new Blob([blob]));
+        
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Create a temporary link element
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'brands.xlsx');
+        link.download = 'brands.xlsx'; // Set the file name
+        
+        // Append link to body, click it, and remove it
         document.body.appendChild(link);
         link.click();
-        link.parentNode.removeChild(link);
+        document.body.removeChild(link);
+        
+        // Clean up the URL
+        window.URL.revokeObjectURL(url);
       } else {
-        console.error('Failed to export data');
+        console.error('Export failed');
       }
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -29,7 +37,12 @@ const ExportButtonBrands = () => {
   };
 
   return (
-    <Button variant="outlined" color="success" onClick={handleExport}>
+    <Button 
+      variant="contained" 
+      color="primary" 
+      onClick={handleExport}
+      startIcon={<FileDownloadIcon />}
+    >
       Xuất danh sách
     </Button>
   );

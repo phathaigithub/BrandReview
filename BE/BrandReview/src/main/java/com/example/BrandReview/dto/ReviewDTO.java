@@ -1,6 +1,9 @@
 package com.example.BrandReview.dto;
 
+import com.example.BrandReview.model.ReviewImage;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ReviewDTO {
     private Integer id;
@@ -10,10 +13,11 @@ public class ReviewDTO {
     private LocalDateTime initDate;
     private Integer status;
     private Integer brandId;
+    private List<ReviewImage> images;
 
     // Constructor
     public ReviewDTO(Integer id, String userName, String brandName, String content, 
-                    LocalDateTime initDate, Integer status, Integer brandId) {
+                    LocalDateTime initDate, Integer status, Integer brandId, List<ReviewImage> images) {
         this.id = id;
         this.userName = userName;
         this.brandName = brandName;
@@ -21,6 +25,7 @@ public class ReviewDTO {
         this.initDate = initDate;
         this.status = status;
         this.brandId = brandId;
+        this.images = images;
     }
 
     // Getters and setters
@@ -78,5 +83,13 @@ public class ReviewDTO {
 
     public void setBrandId(Integer brandId) {
         this.brandId = brandId;
+    }
+
+    public List<ReviewImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ReviewImage> images) {
+        this.images = images;
     }
 }

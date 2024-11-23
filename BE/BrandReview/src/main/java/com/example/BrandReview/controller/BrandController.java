@@ -128,6 +128,7 @@ public class BrandController {
             @RequestParam("location") String location,
             @RequestParam("google") String google,
             @RequestParam("facebook") String facebook,
+            @RequestParam("priority") int priority,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         
         ApiResponse<Brand> response = new ApiResponse<>();
@@ -139,6 +140,7 @@ public class BrandController {
             updatedBrand.setLocation(location);
             updatedBrand.setGoogle(google);
             updatedBrand.setFacebook(facebook);
+            updatedBrand.setPriority(priority);
 
             // Handle image upload if provided
             if (image != null && !image.isEmpty()) {

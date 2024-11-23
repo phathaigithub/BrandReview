@@ -20,7 +20,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(1009,"Không tìm thấy người dùng"),
     BRAND_NOT_FOUND(1010, "Không tìm thấy thương hiệu"),
     ALREADY_REVIEW(1011, "Chỉ có thể đánh giá thương hiệu 1 lần"),
-    BRANDNAME_EXISTED(1012, "Tên thương hiệu đã tồn tại")
+    BRANDNAME_EXISTED(1012, "Tên thương hiệu đã tồn tại"),
+    INVALID_PASSWORD(1013, "Mật khẩu cũ không hợp lệ")
     ;
     private int code;
     private String message;

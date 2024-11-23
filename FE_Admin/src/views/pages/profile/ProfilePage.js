@@ -87,6 +87,13 @@ const ProfilePage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    
+    if (name === 'phone') {
+      if (value && !/^\d*$/.test(value)) {
+        return; // Don't update if input contains non-digits
+      }
+    }
+
     setUserData(prev => ({
       ...prev,
       [name]: value
@@ -96,6 +103,19 @@ const ProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    const phoneRegex = /^\d+$/;
+    const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+
+    if (userData.phone && !phoneRegex.test(userData.phone)) {
+      setMessage({ type: 'danger', content: 'Số điện thoại chỉ được chứa số' });
+      return;
+    }
+
+    if (userData.name && !nameRegex.test(userData.name)) {
+      setMessage({ type: 'danger', content: 'Họ và tên không được chứa số hoặc ký tự đặc biệt' });
+      return;
+    }
+
     if (userData.gender && !['Nam', 'Nữ'].includes(userData.gender)) {
       setMessage({ type: 'danger', content: 'Giới tính chỉ có thể là Nam hoặc Nữ' });
       return;

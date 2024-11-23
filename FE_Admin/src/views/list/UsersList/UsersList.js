@@ -259,9 +259,15 @@ const handleSubmitEdit = async () => {
   // Add form validation
   const validateForm = () => {
     const phoneRegex = /^[0-9]+$/;
+    const nameRegex = /^[A-Za-zÀ-ỹ\s]+$/; // Allows letters and Vietnamese characters
     
     if (!formData.name) {
       showNotification('Vui lòng điền tên người dùng', 'error');
+      return false;
+    }
+
+    if (!nameRegex.test(formData.name)) {
+      showNotification('Tên không được chứa số hoặc ký tự đặc biệt', 'error');
       return false;
     }
 
@@ -320,6 +326,15 @@ const handleSubmitEdit = async () => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Thêm người dùng</DialogTitle>
         <DialogContent>
+        <TextField
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
           <TextField
             margin="dense"
             label="Mật khẩu"
@@ -360,15 +375,6 @@ const handleSubmitEdit = async () => {
             value={formData.phone}
             onChange={handleInputChange}
           />
-          <TextField
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">Huỷ</Button>
@@ -379,6 +385,15 @@ const handleSubmitEdit = async () => {
       <Dialog open={openEdit} onClose={handleCloseEdit}>
         <DialogTitle>Chỉnh sửa tài khoản người dùng</DialogTitle>
         <DialogContent>
+        <TextField
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
           <TextField
             margin="dense"
             label="Mật khẩu"
@@ -417,15 +432,7 @@ const handleSubmitEdit = async () => {
             value={formData.phone}
             onChange={handleInputChange}
           />
-          <TextField
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
+          
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEdit} color="secondary">Huỷ</Button>

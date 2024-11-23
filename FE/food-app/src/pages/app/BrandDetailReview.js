@@ -9,7 +9,7 @@ import { Image, Modal } from 'antd';
 import { CFormRange } from '@coreui/react';
 import { jwtDecode } from 'jwt-decode';
 
-function BrandDetailReview({ review }) {
+function BrandDetailReview({ review, onReportClick }) {
     console.log(review);
   
     const avatar = "http://localhost:8080/uploads/" + review.user.avatar;
@@ -39,6 +39,12 @@ function BrandDetailReview({ review }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleReport = async () => {
+        // First check if user can report
+        if (!onReportClick()) {
+            return; // Stop if user isn't logged in
+        }
+        
+        // Continue with report logic
         // Get token and check user ID
         const token = localStorage.getItem('authToken');
         if (token) {
@@ -104,7 +110,7 @@ function BrandDetailReview({ review }) {
                             <i 
                                 className="bi bi-flag-fill text-danger" 
                                 style={{ cursor: 'pointer', fontSize: '1.2rem' }}
-                                onClick={() => setIsModalOpen(true)}
+                                onClick={handleReport}
                             ></i>
                         </div>
                     </Col>

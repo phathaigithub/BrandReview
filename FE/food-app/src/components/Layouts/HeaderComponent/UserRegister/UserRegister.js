@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as Components from './Components';
 import { useHistory } from 'react-router-dom';
 import "./UserRegister.css";
-import { CContainer, CButton } from '@coreui/react'
+import { CContainer, CButton, CSpinner } from '@coreui/react'
 
 function UserRegister() {
     const [signIn, setSignIn] = useState(true);
@@ -11,6 +11,7 @@ function UserRegister() {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const history = useHistory();
     const isLoggedIn = () => {
         // Replace this with your actual authentication check
@@ -30,6 +31,7 @@ function UserRegister() {
     }, [history]);
     const handleSignUpClick = async (e) => {
         e.preventDefault();
+        setIsLoading(true); // Start loading
 
         if (!name || !email || !password) {
             setErrorMessage("Vui lòng điền đầy đủ thông tin để đăng ký.");
@@ -69,11 +71,14 @@ function UserRegister() {
             console.log('User added:', await response.json());
         } catch (error) {
             console.error('Error adding user:', error);
+        } finally {
+            setIsLoading(false); // Stop loading regardless of outcome
         }
 
     };
     const handleSignInClick = async (e) => {
         e.preventDefault();
+        setIsLoading(true); // Start loading
 
         if (!email || !password) {
             setErrorMessage("Vui lòng điền đầy đủ thông tin để đăng nhập.");
@@ -114,6 +119,8 @@ function UserRegister() {
             }
         } catch (err) {
             setErrorMessage(' Vui lòng kiểm tra lại thông tin.');
+        } finally {
+            setIsLoading(false); // Stop loading regardless of outcome
         }
         console.log("Đăng nhập thành công");
         // Perform your sign-in logic here
@@ -157,7 +164,16 @@ function UserRegister() {
                         />
                         {successMessage && <p style={{ color: 'green', fontSize: '15px' }}>{successMessage}</p>}
                         {errorMessage && <p style={{ color: 'red', fontSize: '12px' }}>{errorMessage}</p>}
-                        <Components.Button onClick={handleSignUpClick}>Đăng ký</Components.Button>
+                        <Components.Button onClick={handleSignUpClick} disabled={isLoading}>
+                            {isLoading ? (
+                                <>
+                                    <CSpinner component="span" size="sm" aria-hidden="true"/>&nbsp;
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                'Đăng ký'
+                            )}
+                        </Components.Button>
                     </Components.Form>
                 </Components.SignUpContainer>
 
@@ -177,7 +193,16 @@ function UserRegister() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         {errorMessage && <p style={{ color: 'red', fontSize: '15px' }}>{errorMessage}</p>}
-                        <Components.Button onClick={handleSignInClick}>Đăng nhập</Components.Button>
+                        <Components.Button onClick={handleSignInClick} disabled={isLoading}>
+                            {isLoading ? (
+                                <>
+                                    <CSpinner component="span" size="sm" aria-hidden="true"/>&nbsp;
+                                    Đang đăng nhập...
+                                </>
+                            ) : (
+                                'Đăng nhập'
+                            )}
+                        </Components.Button>
                     </Components.Form>
                 </Components.SignInContainer>
 

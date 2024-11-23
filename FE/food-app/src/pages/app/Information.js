@@ -4,6 +4,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Section2 from "./Section2";
 import ProfileTab from "./ProfileTab";
+import ChangePasswordTab from "./ChangePasswordTab";
 import { useHistory } from 'react-router-dom';
 
 const Information = () => {
@@ -46,11 +47,12 @@ const Information = () => {
                   </li>
                   <li className="nav-item border-top">
                     <a
-                      className={`sidebar nav-link ${activeTab === 'Favorites' ? 'active' : ''}`}
-                      onClick={() => changeTab("Favorites")}
+                      href="javascript:void(0);"
+                      className={`sidebar nav-link ${activeTab === 'ChangePassword' ? 'active' : ''}`}
+                      onClick={() => changeTab("ChangePassword")}
                     >
-                      Yêu thích
-                      <i className={`bi bi-chevron-right ${activeTab === 'Favorites' ? '' : 'd-none'}`}></i>
+                      Đổi mật khẩu
+                      <i className={`bi bi-chevron-right ${activeTab === 'ChangePassword' ? '' : 'd-none'}`}></i>
                     </a>
                   </li>
                 </ul>
@@ -58,14 +60,8 @@ const Information = () => {
             </Col>
             <Col lg={{ span: 10 }}>
               <Row>
-                {activeTab === 'Profile' && (
-                  <ProfileTab />
-                )}
-                {activeTab === 'Favorites' && (
-                  <div>
-                    {/* Favorites content will go here */}
-                  </div>
-                )}
+                {activeTab === 'Profile' && <ProfileTab />}
+                {activeTab === 'ChangePassword' && <ChangePasswordTab />}
               </Row>
             </Col>
           </Row>

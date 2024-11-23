@@ -38,7 +38,7 @@ const Home = () => {
         {/* Home Section Blog */}
 
         {/* Home Section Contact */}
-        <Section7 />
+        {/* <Section7 /> */}
       </Layout>
     </>
   );

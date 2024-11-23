@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Box, Select, MenuItem } from '@mui/material';
+import { Box, Select, MenuItem, Snackbar, Alert } from '@mui/material';
 import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog';
 
 const ContactList = () => {
@@ -82,6 +82,28 @@ const ContactList = () => {
   const [contactToDelete, setContactToDelete] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
+  // Add snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showNotification = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
+
   // Fetch contacts data
   const fetchContacts = async () => {
     try {
@@ -90,10 +112,10 @@ const ContactList = () => {
         const data = await response.json();
         setRows(data);
       } else {
-        console.error('Failed to fetch contact data');
+        showNotification('Không thể tải danh sách yêu cầu hỗ trợ', 'error');
       }
     } catch (error) {
-      console.error('Error fetching contact data:', error);
+      showNotification('Đã xảy ra lỗi khi tải danh sách yêu cầu hỗ trợ', 'error');
     }
   };
 
@@ -117,13 +139,12 @@ const ContactList = () => {
 
       if (response.ok) {
         fetchContacts();
-        alert('Cập nhật trạng thái thành công');
+        showNotification('Cập nhật trạng thái thành công');
       } else {
-        alert('Không thể cập nhật trạng thái');
+        showNotification('Không thể cập nhật trạng thái', 'error');
       }
     } catch (error) {
-      console.error('Error updating status:', error);
-      alert('Đã xảy ra lỗi khi cập nhật trạng thái');
+      showNotification('Đã xảy ra lỗi khi cập nhật trạng thái', 'error');
     }
   };
 
@@ -146,13 +167,12 @@ const ContactList = () => {
 
       if (response.ok) {
         setRows((prevRows) => prevRows.filter((row) => row.id !== contactToDelete));
-        alert('Xóa yêu cầu hỗ trợ thành công');
+        showNotification('Xóa yêu cầu hỗ trợ thành công');
       } else {
-        alert('Không thể xóa yêu cầu hỗ trợ');
+        showNotification('Không thể xóa yêu cầu hỗ trợ', 'error');
       }
     } catch (error) {
-      console.error('Error deleting contact:', error);
-      alert('Đã xảy ra lỗi khi xóa yêu cầu hỗ trợ');
+      showNotification('Đã xảy ra lỗi khi xóa yêu cầu hỗ trợ', 'error');
     }
     handleCloseDialog();
   };
@@ -187,6 +207,21 @@ const ContactList = () => {
         onClose={handleCloseDialog}
         onConfirm={handleDelete}
       />
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

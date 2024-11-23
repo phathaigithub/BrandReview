@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import { Button,Select, MenuItem, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Snackbar, Alert } from '@mui/material';
+import { Button,Select, MenuItem, Box, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Snackbar, Alert, FormHelperText } from '@mui/material';
 import DeleteConfirmDialog from '../EmployeesList/DeleteConfirmDialog'; 
 import ExportButtonBrands from './ExportButtonBrands.js';
 
@@ -26,6 +26,7 @@ const BrandsList = () => {
     { field: 'google', headerName: 'Google URL', width: 150 },
     { field: 'facebook', headerName: 'Facebook URL', width: 150 },
     { field: 'initDate', headerName: 'Ngày tạo', width: 180, valueFormatter: (params) => formatDate(params) },
+    { field: 'priority', headerName: 'Độ ưu tiên', width: 100 },
     {
       field: 'actions',
       headerName: '',
@@ -71,10 +72,13 @@ const BrandsList = () => {
     name: '',
     brandType: 1,
     phone: '',
-    location: '',
+    streetAddress: '',
+    district: '',
+    city: 'TPHCM',
     google: '',
     facebook: '',
-    image: null
+    image: null,
+    priority: 0
   });
 
   const [snackbar, setSnackbar] = useState({
@@ -90,10 +94,13 @@ const BrandsList = () => {
       name: '',
       brandType: 1,
       phone: '',
-      location: '',
+      streetAddress: '',
+      district: '',
+      city: 'TPHCM',
       google: '',
       facebook: '',
-      image: null
+      image: null,
+      priority: 0
     });
     setOpen(true);
   };
@@ -107,11 +114,124 @@ const BrandsList = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    
+    setFormData(prevData => {
+      const newData = {
+        ...prevData,
+        [name]: value,
+      };
+
+      if (['streetAddress', 'district', 'city'].includes(name)) {
+        const combinedLocation = [
+          newData.streetAddress,
+          newData.district,
+          newData.city
+        ].filter(Boolean).join(', ');
+        
+        newData.location = combinedLocation;
+      }
+
+      return newData;
+    });
   };
+
+  const splitLocation = (location) => {
+    if (!location) return { streetAddress: '', district: '', city: 'TPHCM' };
+
+    const parts = location.split(', ');
+    let streetAddress = '', district = '', city = 'TPHCM';
+
+    if (parts.length >= 3) {
+      city = parts.pop();
+      district = parts.pop();
+      streetAddress = parts.join(', ');
+    } else if (parts.length === 2) {
+      district = parts.pop();
+      streetAddress = parts.join(', ');
+    } else if (parts.length === 1) {
+      streetAddress = parts[0];
+    }
+
+    return { streetAddress, district, city };
+  };
+
+  const handleEditClick = (brand) => {
+    const { streetAddress, district, city } = splitLocation(brand.location);
+    
+    setFormData({
+      id: brand.id,
+      name: brand.name,
+      brandType: brand.brandType,
+      phone: brand.phone,
+      location: brand.location,
+      streetAddress,
+      district,
+      city,
+      google: brand.google,
+      facebook: brand.facebook,
+      priority: brand.priority || 0,
+      image: null
+    });
+    setImagePreview(brand.image ? `http://localhost:8080/uploads/${brand.image}` : null);
+    setOpenEdit(true);
+  };
+
+  const renderAddressFields = () => (
+    <>
+      <TextField
+        margin="dense"
+        label="Địa chỉ/ phường"
+        type="text"
+        fullWidth
+        name="streetAddress"
+        value={formData.streetAddress}
+        onChange={handleInputChange}
+        required
+        placeholder="Ví dụ: 22 Lê Trọng Tấn, phường Tây Thạnnh"
+      />
+      <Select
+        margin="dense"
+        fullWidth
+        name="district"
+        value={formData.district}
+        onChange={handleInputChange}
+        displayEmpty
+      >
+        <MenuItem value="" disabled>
+          Chọn Quận *
+        </MenuItem>
+        <MenuItem value="Quận 1">Quận 1</MenuItem>
+        <MenuItem value="Quận 2">Quận 2</MenuItem>
+        <MenuItem value="Quận 3">Quận 3</MenuItem>
+        <MenuItem value="Quận 4">Quận 4</MenuItem>
+        <MenuItem value="Quận 5">Quận 5</MenuItem>
+        <MenuItem value="Quận 6">Quận 6</MenuItem>
+        <MenuItem value="Quận 7">Quận 7</MenuItem>
+        <MenuItem value="Quận 8">Quận 8</MenuItem>
+        <MenuItem value="Quận 9">Quận 9</MenuItem>
+        <MenuItem value="Quận 10">Quận 10</MenuItem>
+        <MenuItem value="Quận 11">Quận 11</MenuItem>
+        <MenuItem value="Quận 12">Quận 12</MenuItem>
+        <MenuItem value="Quận Phú Nhuận">Quận Phú Nhuận</MenuItem>
+        <MenuItem value="Quận Bình Thạnh">Quận Bình Thạnh</MenuItem>
+        <MenuItem value="Quận Tân Bình">Quận Tân Bình</MenuItem>
+        <MenuItem value="Quận Tân Phú">Quận Tân Phú</MenuItem>
+        <MenuItem value="Quận Gò Vấp">Quận Gò Vấp</MenuItem>
+        <MenuItem value="Quận Bình Tân">Quận Bình Tân</MenuItem>
+      </Select>
+      <TextField
+        margin="dense"
+        label="Thành phố"
+        type="text"
+        fullWidth
+        name="city"
+        value={formData.city}
+        onChange={handleInputChange}
+        disabled
+      />
+    </>
+  );
+
   // Handle add brand
   const [brandAdded, setBrandAdded] = useState(false);
   const handleAddSubmit = async () => {
@@ -129,7 +249,11 @@ const BrandsList = () => {
       formDataToSend.append('name', formData.name);
       formDataToSend.append('phone', formData.phone);
       formDataToSend.append('location', formData.location);
-      formDataToSend.append('google', formData.google);
+      // Handle google URL - extract from iframe if needed
+      const googleUrl = formData.google.includes('<iframe') 
+        ? (formData.google.match(/src="([^"]+)"/) || [])[1] || formData.google
+        : formData.google;
+      formDataToSend.append('google', googleUrl);
       formDataToSend.append('facebook', formData.facebook);
       formDataToSend.append('brandType', JSON.stringify({
         id: formData.brandType,
@@ -222,21 +346,6 @@ const handleDelete = async () => {
 };
 
 //// EDITTTTT
-const handleEditClick = (brand) => {
-  setFormData({
-    id: brand.id,
-    name: brand.name,
-    brandType: brand.brandType, 
-    phone: brand.phone,
-    location: brand.location,
-    google: brand.google,
-    facebook: brand.facebook,
-    image: null
-  });
-  setImagePreview(brand.image ? `http://localhost:8080/uploads/${brand.image}` : null);
-  setOpenEdit(true);
-};
-
 const handleSubmitEdit = async () => {
   if (!validateForm()) return;
   try {
@@ -251,11 +360,16 @@ const handleSubmitEdit = async () => {
     formDataToSend.append('name', formData.name);
     formDataToSend.append('phone', formData.phone);
     formDataToSend.append('location', formData.location);
-    formDataToSend.append('google', formData.google);
+    // Handle google URL - extract from iframe if needed
+    const googleUrl = formData.google.includes('<iframe') 
+      ? (formData.google.match(/src="([^"]+)"/) || [])[1] || formData.google
+      : formData.google;
+    formDataToSend.append('google', googleUrl);
     formDataToSend.append('facebook', formData.facebook);
     if (formData.image) {
       formDataToSend.append('image', formData.image);
     }
+    formDataToSend.append('priority', formData.priority);
 
     const response = await fetch(`http://localhost:8080/brand/edit/${formData.id}`, {
       method: 'PUT',
@@ -300,14 +414,25 @@ const handleSubmitEdit = async () => {
   const validateForm = () => {
     // Add phone validation
     const phoneRegex = /^[0-9]+$/;
-    if (!formData.name || !formData.location || !formData.google) {
-      showNotification('Vui lòng điền đầy đủ thông tin: Tên cửa hàng, địa chỉ và Google URL', 'error');
+    
+    // Check required fields including district
+    if (!formData.name || !formData.streetAddress || !formData.district) {
+      showNotification('Vui lòng điền đầy đủ thông tin: Tên cửa hàng, địa chỉ và quận', 'error');
       return false;
     }
+
+    // Validate phone number if provided
     if (formData.phone && !phoneRegex.test(formData.phone)) {
       showNotification('Số điện thoại không hợp lệ. Vui lòng chỉ nhập số', 'error');
       return false;
     }
+
+    // Validate Google URL
+    if (!formData.google) {
+      showNotification('Vui lòng nhập Google URL', 'error');
+      return false;
+    }
+
     return true;
   };
 
@@ -347,7 +472,7 @@ const handleSubmitEdit = async () => {
   return (
     <>
       <Box display="flex" justifyContent="space-between" marginBottom={2}>
-        <Button variant="contained" color="primary"  onClick={handleClickOpen}>Thêm cửa hàng</Button>
+        <Button variant="contained" color="primary" onClick={handleClickOpen}>Thêm cửa hàng</Button>
         <ExportButtonBrands />
       </Box>
       <Paper sx={{ height: 'calc(80vh - 120px)', width: '100%' }}>
@@ -406,16 +531,7 @@ const handleSubmitEdit = async () => {
               pattern: '[0-9]*'
             }}
           />
-          <TextField 
-            margin="dense"
-            label="Địa chỉ"
-            type="text"
-            fullWidth
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            required
-          />
+          {renderAddressFields()}
           <TextField
             margin="dense"
             label="Google URL"
@@ -490,19 +606,10 @@ const handleSubmitEdit = async () => {
               pattern: '[0-9]*'
             }}
           />
-          <TextField 
-            margin="dense"
-            label="Địa chỉ *"
-            type="text"
-            fullWidth
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            required
-          />
+          {renderAddressFields()}
           <TextField
             margin="dense"
-            label="Google URL *"
+            label="Google URL"
             type="text"
             fullWidth
             name="google"
@@ -518,6 +625,19 @@ const handleSubmitEdit = async () => {
             name="facebook"
             value={formData.facebook}
             onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Độ ưu tiên"
+            type="number"
+            fullWidth
+            name="priority"
+            value={formData.priority}
+            onChange={handleInputChange}
+            inputProps={{
+              min: 0,
+              step: 1
+            }}
           />
           <Box sx={{ mt: 2 }}>
             <TextField

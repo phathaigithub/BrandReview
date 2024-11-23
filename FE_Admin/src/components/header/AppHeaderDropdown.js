@@ -41,10 +41,6 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Cài đặt</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Hồ sơ
-        </CDropdownItem>
         <CDropdownItem onClick={handleLogout}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Đăng xuất

@@ -14,4 +14,5 @@ public interface UserService{
 
     public User updateUser(int id, User user);
     public Optional<User> getUserById(int id);
+    void changePassword(int userId, String oldPassword, String newPassword);
 }
